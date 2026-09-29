@@ -1,5 +1,3 @@
-/** @jsxImportSource react */
-
 // import { CounterComponent } from "@/builder-registry";
 import { Content } from "@builder.io/sdk-react";
 import { CounterComponent } from "./builder-registry";
