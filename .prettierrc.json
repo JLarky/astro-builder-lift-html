@@ -1,7 +1,7 @@
 {
   "useTabs": true,
   "singleQuote": true,
-  "plugins": ["prettier-plugin-astro"],
+  "plugins": ["@prettier/plugin-oxc", "prettier-plugin-astro"],
   "overrides": [
     {
       "files": "*.astro",
