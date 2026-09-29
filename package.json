@@ -6,7 +6,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "format": "prettier --write \"**/*.astro\""
+    "fmt": "prettier --cache --write \"**/*.astro\""
   },
   "dependencies": {
     "@astrojs/react": "^7.0.0",
