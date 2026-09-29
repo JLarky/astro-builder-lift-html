@@ -13,7 +13,6 @@ export default defineConfig({
   }),
   integrations: [
     react({
-      include: ['**/react/*'],
       exclude: ['**/solid/**'],
     }),
     solid({
