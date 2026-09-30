@@ -1,4 +1,4 @@
-import { useId, useMemo, useState, type KeyboardEvent } from 'react';
+import { useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import styles from './styles.module.css';
 
 type FaqItem = {
@@ -76,7 +76,7 @@ const TABS: FaqTab[] = [
 				id: 'hidden',
 				question: 'What happens to an open answer that search hides?',
 				answer:
-					'It stays open in state, but it leaves the list until the query matches it again. Clear the search and the answer is expanded exactly as you left it.',
+					'It leaves the list until the query matches it again. A search expands every visible match so the highlighted word is on screen. Clearing the search restores the answers that were open before you typed, including ones the query had hidden.',
 			},
 			{
 				id: 'refresh',
@@ -106,7 +106,7 @@ const TABS: FaqTab[] = [
 				id: 'clear',
 				question: 'How do I reset the filter?',
 				answer:
-					'Clear the field with the × button or by deleting the text. Every category returns to its full list, and answers you had opened are still open.',
+					'Clear the field with the × button or by deleting the text. Every category returns to its full list, and the answers that were open before the search are open again.',
 			},
 		],
 	},
@@ -143,6 +143,29 @@ export default function Faq() {
 	const [openByTab, setOpenByTab] = useState<Record<string, string[]>>({
 		rendering: ['hydrate'],
 	});
+	const openBeforeSearch = useRef<Record<string, string[]> | null>(null);
+
+	function applyQuery(value: string) {
+		const wasSearching = query.trim().length > 0;
+		const willSearch = value.trim().length > 0;
+		if (!wasSearching && willSearch) {
+			openBeforeSearch.current = openByTab;
+		}
+		if (willSearch) {
+			const q = value.trim().toLowerCase();
+			const expanded: Record<string, string[]> = {};
+			for (const tab of TABS) {
+				expanded[tab.id] = tab.items
+					.filter((item) => matches(item, q))
+					.map((item) => item.id);
+			}
+			setOpenByTab(expanded);
+		} else if (wasSearching && openBeforeSearch.current) {
+			setOpenByTab(openBeforeSearch.current);
+			openBeforeSearch.current = null;
+		}
+		setQuery(value);
+	}
 
 	const normalized = query.trim().toLowerCase();
 	const active = TABS.find((tab) => tab.id === tabId) ?? TABS[0];
@@ -228,14 +251,14 @@ export default function Faq() {
 						type="search"
 						value={query}
 						placeholder="Search questions and answers"
-						onChange={(event) => setQuery(event.target.value)}
+						onChange={(event) => applyQuery(event.target.value)}
 						autoComplete="off"
 					/>
 					{query ? (
 						<button
 							type="button"
 							className={styles.clear}
-							onClick={() => setQuery('')}
+							onClick={() => applyQuery('')}
 						>
 							<span className={styles.sr}>Clear search</span>
 							<span aria-hidden="true">×</span>
