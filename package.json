@@ -27,6 +27,7 @@
 		"@astrojs/check": "^0.9.10",
 		"@jlarky/gha-ts": "npm:@jsr/jlarky__gha-ts@^0.2.2",
 		"@prettier/plugin-oxc": "^0.2.3",
+		"@types/node": "^26.6.3",
 		"prettier": "^3.9.9",
 		"prettier-plugin-astro": "^1.1.0",
 		"typescript": "6"

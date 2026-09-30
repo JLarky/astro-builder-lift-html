@@ -7,7 +7,7 @@ bun install
 bun dev
 ```
 
-Local preview:
+Local preview uses the Node adapter instead of Vercel:
 
 ```sh
 bun run build-preview # or npm run build-preview
