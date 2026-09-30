@@ -1,6 +1,7 @@
 ---
 import { fetchOneEntry } from '@builder.io/sdk-react';
-import BuilderContent from '../components/BuilderContent';
+import BuilderContent from '../builder/BuilderContent';
+import Loader from '../builder/Counters/wc/Loader.astro';
 
 const PUBLIC_API_KEY = 'dbca46c0d48940b09ef11fa8978c6dea';
 
@@ -11,6 +12,8 @@ const content = await fetchOneEntry({
 	model: 'page',
 	userAttributes: { urlPath },
 });
+
+const isEditing = Astro.url.searchParams.has('__builder_editing__');
 ---
 
 <!doctype html>
@@ -22,37 +25,23 @@ const content = await fetchOneEntry({
 	</head>
 	<body>
 		<h1>Hello</h1>
-		<BuilderContent
-			client:idle
-			apiKey={PUBLIC_API_KEY}
-			model="page"
-			content={content}
-		/>
-		<script>
-			class MyCounter extends HTMLElement {
-				constructor() {
-					super();
-					console.log('MyCounter created');
-					this.addEventListener('click', (e) => {
-						if (!(e.target instanceof HTMLElement)) {
-							return;
-						}
-						const span = this.querySelector('span');
-						if (!span) {
-							return;
-						}
-						let count = Number(span?.textContent) || 0;
-						const action = e.target?.dataset?.action;
-						if (action === 'inc') {
-							count++;
-						} else if (action === 'dec') {
-							count--;
-						}
-						span.textContent = '' + count;
-					});
-				}
-			}
-			customElements.define('my-counter', MyCounter);
-		</script>
+		{isEditing ? (
+			<BuilderContent
+				client:idle
+				apiKey={PUBLIC_API_KEY}
+				model="page"
+				content={content}
+				isEditing={isEditing}
+			/>
+		) : (
+			<BuilderContent
+				/* no client:load */
+				apiKey={PUBLIC_API_KEY}
+				model="page"
+				content={content}
+				isEditing={isEditing}
+			/>
+		)}
+		<Loader />
 	</body>
 </html>

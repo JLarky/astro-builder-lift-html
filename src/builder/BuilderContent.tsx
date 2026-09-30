@@ -1,10 +1,12 @@
-import { Content } from '@builder.io/sdk-react';
-import { CounterComponent } from './builder-registry';
+import { Content, type BuilderContent } from '@builder.io/sdk-react';
+import { customComponents } from './builder-registry';
+import { OptionsProvider } from './OptionsProvider';
 
 interface PageProps {
 	apiKey: string;
 	model: string;
-	content: any;
+	content: BuilderContent | null;
+	isEditing: boolean;
 }
 
 export default function Page(props: PageProps) {
@@ -17,13 +19,13 @@ export default function Page(props: PageProps) {
 		);
 	}
 	return (
-		<>
+		<OptionsProvider isEditing={props.isEditing}>
 			<Content
 				content={props.content}
 				apiKey={props.apiKey}
 				model={props.model}
-				customComponents={[CounterComponent]}
+				customComponents={customComponents}
 			/>
-		</>
+		</OptionsProvider>
 	);
 }
