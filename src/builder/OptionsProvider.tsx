@@ -19,8 +19,9 @@ export function useOptions() {
 	return React.useContext(OptionsContext);
 }
 
-// safe-to-modify stays false during editing hydration so Solid does not
-// overwrite the count, then becomes true.
+/**
+ * Use safe to modify to prevent hydration errors if the web component will change the DOM before React hydrates.
+ */
 export function useSafeToModify() {
 	const { isEditing } = useOptions();
 	const [safeToModify, setSafeToModify] = React.useState(!isEditing);
