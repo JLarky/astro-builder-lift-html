@@ -1,13 +1,13 @@
 {
-	"useTabs": true,
-	"singleQuote": true,
-	"plugins": ["@prettier/plugin-oxc", "prettier-plugin-astro"],
-	"overrides": [
-		{
-			"files": "*.astro",
-			"options": {
-				"parser": "astro"
-			}
-		}
-	]
+  "useTabs": true,
+  "singleQuote": true,
+  "plugins": ["@prettier/plugin-oxc", "prettier-plugin-astro"],
+  "overrides": [
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    }
+  ]
 }

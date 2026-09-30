@@ -1,2 +1,0 @@
-# gha-ts writes this file. Formatting it would drift from the generator.
-.github/workflows/*.generated.yml
