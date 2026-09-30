@@ -5,60 +5,64 @@ import Card from '../components/Card.astro';
 export const prerender = true;
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="astro-builder-lift-html">
 	<main>
+		<p class="kicker">Astro · Builder.io · lift-html</p>
 		<h1>
-			Welcome to <span class="text-gradient">Astro</span>
+			A Builder.io page with a <span class="text-gradient">lift-html</span>{' '}
+			counter
 		</h1>
-		<p class="instructions">
-			Check out the <code>src/pages</code> directory to get started.
-			<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message
-			above.
+		<p class="lead">
+			This is a demo of a published Builder.io page and a lift-html counter.
+			Open <a href="/builder-demo">/builder-demo</a> to see it. See the README
+			for how to run locally.
 		</p>
+
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
+				href="/builder-demo"
+				title="Builder demo"
+				body="The published Builder.io page and the lift-html counter."
 			/>
 			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
+				href="https://github.com/JLarky/lift-html"
+				title="lift-html"
+				body="The library that defines the my-counter element."
 			/>
 			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Chat"
-				body="Come say hi to our amazing Discord community. ❤️"
+				href="https://www.builder.io/"
+				title="Builder.io"
+				body="The visual editor for the page this demo renders."
 			/>
 		</ul>
 	</main>
 </Layout>
 
 <style>
-	:root {
-		--astro-gradient: linear-gradient(0deg, #4f39fa, #da62c4);
-	}
-
 	h1 {
-		margin: 2rem 0;
+		margin: 0.5rem 0 1.5rem;
+		font-size: clamp(2rem, 4vw, 3rem);
+		line-height: 1.15;
 	}
 
 	main {
 		margin: auto;
-		padding: 1em;
-		max-width: 60ch;
+		padding: 1.5rem 1rem 3rem;
+		max-width: 68ch;
+	}
+
+	.kicker {
+		margin: 2rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #4f39fa;
 	}
 
 	.text-gradient {
 		font-weight: 900;
-		background-image: var(--astro-gradient);
+		background-image: linear-gradient(0deg, #4f39fa, #da62c4);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-size: 100% 200%;
@@ -77,20 +81,37 @@ export const prerender = true;
 		}
 	}
 
-	.instructions {
+	.lead,
+	section p {
 		line-height: 1.6;
-		margin: 1rem 0;
-		background: #4f39fa;
-		padding: 1rem;
-		border-radius: 0.4rem;
-		color: var(--color-bg);
 	}
 
-	.instructions code {
+	.lead {
+		margin: 0 0 2rem;
+		font-size: 1.15rem;
+	}
+
+	section {
+		margin: 0 0 1.75rem;
+	}
+
+	section h2 {
+		margin: 0 0 0.4rem;
+	}
+
+	section p {
+		margin: 0.6rem 0 0;
+	}
+
+	code {
 		font-size: 0.875em;
 		border: 0.1em solid var(--color-border);
 		border-radius: 4px;
 		padding: 0.15em 0.25em;
+	}
+
+	section a {
+		color: inherit;
 	}
 
 	.link-card-grid {
@@ -98,5 +119,6 @@ export const prerender = true;
 		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
 		gap: 1rem;
 		padding: 0;
+		margin: 2rem 0 0;
 	}
 </style>
