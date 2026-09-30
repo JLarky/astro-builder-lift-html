@@ -6,7 +6,7 @@ import solid from '@astrojs/solid-js';
 
 const localPreview = Boolean(process.env.LOCAL_PREVIEW);
 
-// Files under solid/ are custom elements, and everything else in src/builder is React.
+// Make sure that JSX is compiled with Solid for components inside the solid folder and with React for everything else.
 const solidFiles = '**/solid/**';
 
 export default defineConfig({
