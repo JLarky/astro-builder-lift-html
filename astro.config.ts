@@ -6,6 +6,9 @@ import solid from '@astrojs/solid-js';
 
 const localPreview = Boolean(process.env.LOCAL_PREVIEW);
 
+// Make sure that JSX is compiled with Solid for components inside the solid folder and with React for everything else.
+const solidFiles = '**/solid/**';
+
 export default defineConfig({
 	output: 'server',
 	adapter: localPreview
@@ -20,10 +23,10 @@ export default defineConfig({
 			}),
 	integrations: [
 		react({
-			exclude: ['**/solid/**'],
+			exclude: [solidFiles],
 		}),
 		solid({
-			include: ['**/solid/*'],
+			include: [solidFiles],
 		}),
 	],
 });
