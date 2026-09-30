@@ -17,13 +17,15 @@
 		"@astrojs/solid-js": "^7.0.2",
 		"@astrojs/vercel": "11.0.11",
 		"@builder.io/sdk-react": "^5.2.15",
+		"@lift-html/incentive": "^0.0.1",
 		"@lift-html/solid": "^0.0.6",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
 		"astro": "^7.3.5",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
-		"solid-js": "^1.9.13"
+		"solid-js": "^1.9.13",
+		"valibot": "^1.5.0"
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.10",
@@ -33,5 +35,6 @@
 		"prettier": "^3.9.9",
 		"prettier-plugin-astro": "^1.1.0",
 		"typescript": "6"
-	}
+	},
+	"packageManager": "bun@1.4.2"
 }
