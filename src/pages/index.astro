@@ -14,8 +14,9 @@ export const prerender = true;
 		</h1>
 		<p class="lead">
 			This is a demo of a published Builder.io page and a lift-html counter.
-			Open <a href="/builder-demo">/builder-demo</a> to see it. See the README
-			for how to run locally.
+			Open <a href="/builder-demo">/builder-demo</a> to see it. The{' '}
+			<a href="/live-search">live search</a> page is a separate plain React
+			widget. See the README for how to run locally.
 		</p>
 
 		<ul role="list" class="link-card-grid">
@@ -23,6 +24,11 @@ export const prerender = true;
 				href="/builder-demo"
 				title="Builder demo"
 				body="The published Builder.io page and the lift-html counter."
+			/>
+			<Card
+				href="/live-search"
+				title="Live search"
+				body="A plain React widget that filters a local list as you type."
 			/>
 			<Card
 				href="https://github.com/JLarky/lift-html"

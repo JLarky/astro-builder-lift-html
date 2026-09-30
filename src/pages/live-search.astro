@@ -1,0 +1,57 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LiveSearch from '../live-search/LiveSearch';
+
+export const prerender = true;
+---
+
+<Layout title="Live search">
+	<main>
+		<p class="kicker">
+			<a href="/">Home</a>
+			<span aria-hidden="true"> · </span>
+			plain React
+		</p>
+		<h1>Live search</h1>
+		<p class="lead">
+			Type to filter a local shelf of records. Matches highlight as you go,
+			arrow keys move the selection, and a clear button brings the full list
+			back. This page is a React island: no lift-html and no Builder.io.
+		</p>
+		<LiveSearch client:load />
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1.5rem 1rem 3rem;
+		max-width: 960px;
+	}
+
+	h1 {
+		margin: 0.5rem 0 1rem;
+		font-size: clamp(2rem, 4vw, 3rem);
+		line-height: 1.15;
+	}
+
+	.kicker {
+		margin: 2rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #4f39fa;
+	}
+
+	.kicker a {
+		color: inherit;
+	}
+
+	.lead {
+		margin: 0 0 1.5rem;
+		max-width: 62ch;
+		font-size: 1.15rem;
+		line-height: 1.6;
+	}
+</style>
