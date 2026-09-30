@@ -6,3 +6,10 @@ Same idea as [astro-builder-optimized](https://github.com/JLarky/astro-builder-o
 bun install
 bun dev
 ```
+
+Local preview uses the Node adapter instead of Vercel:
+
+```sh
+bun run build-preview # or npm run build-preview
+bun run preview # or npm run preview
+```

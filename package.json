@@ -4,13 +4,15 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"build": "astro build",
-		"preview": "astro preview",
+		"build-preview": "LOCAL_PREVIEW=1 astro build",
+		"preview": "node ./dist/server/entry.mjs",
 		"astro": "astro",
 		"fmt": "prettier --cache --write \"**/*.astro\"",
 		"fmt:check": "prettier --cache --check .",
 		"check": "astro check"
 	},
 	"dependencies": {
+		"@astrojs/node": "^11.1.6",
 		"@astrojs/react": "^7.0.0",
 		"@astrojs/solid-js": "^7.0.2",
 		"@astrojs/vercel": "11.0.11",
@@ -25,6 +27,7 @@
 		"@astrojs/check": "^0.9.10",
 		"@jlarky/gha-ts": "npm:@jsr/jlarky__gha-ts@^0.2.2",
 		"@prettier/plugin-oxc": "^0.2.3",
+		"@types/node": "^26.6.3",
 		"prettier": "^3.9.9",
 		"prettier-plugin-astro": "^1.1.0",
 		"typescript": "6"
