@@ -7,7 +7,7 @@
 		"build-preview": "LOCAL_PREVIEW=1 astro build",
 		"preview": "node ./dist/server/entry.mjs",
 		"astro": "astro",
-		"fmt": "prettier --cache --write \"**/*.astro\"",
+		"fmt": "prettier --cache --write .",
 		"fmt:check": "prettier --cache --check .",
 		"check": "astro check"
 	},
