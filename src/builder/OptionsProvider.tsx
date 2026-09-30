@@ -18,3 +18,14 @@ export function OptionsProvider({
 export function useOptions() {
 	return React.useContext(OptionsContext);
 }
+
+// safe-to-modify stays false during editing hydration so Solid does not
+// overwrite the count, then becomes true.
+export function useSafeToModify() {
+	const { isEditing } = useOptions();
+	const [safeToModify, setSafeToModify] = React.useState(!isEditing);
+	React.useEffect(() => {
+		setSafeToModify(true);
+	}, [isEditing]);
+	return safeToModify;
+}

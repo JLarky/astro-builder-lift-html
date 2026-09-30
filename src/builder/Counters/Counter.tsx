@@ -1,14 +1,10 @@
 import styles from './styles.module.css';
 import type { Props } from './CounterRC';
-import { useOptions } from '../OptionsProvider';
-import { useEffect, useState } from 'react';
+import { useOptions, useSafeToModify } from '../OptionsProvider';
 
 function Counter(props: Props) {
 	const { isEditing } = useOptions();
-	const [safeToModify, setSafeToModify] = useState(!isEditing);
-	useEffect(() => {
-		setSafeToModify(true);
-	}, [isEditing]);
+	const safeToModify = useSafeToModify();
 	const count = props.initialCount;
 	console.log('React Counter render', { count, safeToModify });
 
