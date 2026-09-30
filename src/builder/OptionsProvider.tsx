@@ -18,3 +18,15 @@ export function OptionsProvider({
 export function useOptions() {
 	return React.useContext(OptionsContext);
 }
+
+/**
+ * Use safe to modify to prevent hydration errors if the web component will change the DOM before React hydrates.
+ */
+export function useSafeToModify() {
+	const { isEditing } = useOptions();
+	const [safeToModify, setSafeToModify] = React.useState(!isEditing);
+	React.useEffect(() => {
+		setSafeToModify(true);
+	}, [isEditing]);
+	return safeToModify;
+}
