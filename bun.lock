@@ -9,6 +9,7 @@
         "@astrojs/solid-js": "^7.0.2",
         "@astrojs/vercel": "11.0.11",
         "@builder.io/sdk-react": "^5.2.15",
+        "@lift-html/core": "^0.0.4",
         "@lift-html/incentive": "^0.0.1",
         "@lift-html/solid": "^0.0.6",
         "@types/react": "^19.3.0",
