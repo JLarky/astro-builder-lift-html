@@ -1,15 +1,21 @@
 # astro-builder-lift-html
 
-Same idea as [astro-builder-optimized](https://github.com/JLarky/astro-builder-optimized), using [lift-html](https://github.com/JLarky/lift-html).
+A visual CMS like [Builder.io](https://www.builder.io/) makes every piece of a page editable and interactive, but sending all that interactivity as JavaScript makes the bundle grow with every interactive part, which does not scale. The floor is already high because the Builder SDK and React ship as baseline, and it is hard to keep the bundle small as you scale with components: it is hard to make it so that you are not paying for components sometimes, even if they are not on that page. The interactive editor keeps full functionality; the smaller bundle is for the production page. This demo shows the alternative: interactive components as web components via [lift-html](https://github.com/JLarky/lift-html), so the bundle drops from 300 kilobytes gzipped to 10 kilobytes gzipped.
+
+Live at [astro-builder-lift-html.vercel.app](https://astro-builder-lift-html.vercel.app). The homepage links to the demos.
+
+## Start the development server
 
 ```sh
 bun install
 bun dev
 ```
 
+## Build local preview
+
 Local preview uses the Node adapter instead of Vercel:
 
 ```sh
-bun run build-preview # or npm run build-preview
-bun run preview # or npm run preview
+bun run build-preview
+bun run preview
 ```
