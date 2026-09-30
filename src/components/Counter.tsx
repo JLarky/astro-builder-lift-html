@@ -1,0 +1,32 @@
+import styles from './styles.module.css';
+
+interface CounterProps {
+	initialCount?: number;
+}
+
+declare module 'react' {
+	namespace JSX {
+		interface IntrinsicElements {
+			'my-counter': any;
+		}
+	}
+}
+
+function Counter({ initialCount = 99 }: CounterProps) {
+	console.log('Counter component rendered');
+	const count = initialCount;
+
+	return (
+		<my-counter class={styles.counter}>
+			<button data-action="dec" className={styles.btn}>
+				-
+			</button>
+			<span className={styles.count}>{count}</span>
+			<button data-action="inc" className={styles.btn}>
+				+
+			</button>
+		</my-counter>
+	);
+}
+
+export default Counter;
