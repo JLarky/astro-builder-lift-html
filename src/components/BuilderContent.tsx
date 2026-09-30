@@ -1,14 +1,21 @@
-import { Content } from '@builder.io/sdk-react';
+import { useEffect, useState } from 'react';
+import { Content, isEditing } from '@builder.io/sdk-react';
 import { CounterComponent } from './builder-registry';
 
 interface PageProps {
 	apiKey: string;
 	model: string;
 	content: any;
+	search?: string;
 }
 
 export default function Page(props: PageProps) {
-	if (!props.content) {
+	const [editing, setEditing] = useState(false);
+	useEffect(() => {
+		setEditing(isEditing(props.search));
+	}, [props.search]);
+
+	if (!props.content && !editing) {
 		return (
 			<>
 				<h1>404</h1>

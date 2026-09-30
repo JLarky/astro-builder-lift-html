@@ -27,6 +27,7 @@ const content = await fetchOneEntry({
 			apiKey={PUBLIC_API_KEY}
 			model="page"
 			content={content}
+			search={Astro.url.search}
 		/>
 		<script>
 			class MyCounter extends HTMLElement {
