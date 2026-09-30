@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"scripts": {
-		"dev": "astro dev",
+		"dev": "astro dev --background",
 		"start": "astro dev",
 		"build": "astro build",
 		"build-preview": "LOCAL_PREVIEW=1 astro build",
