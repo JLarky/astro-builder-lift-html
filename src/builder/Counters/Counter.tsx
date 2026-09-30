@@ -10,7 +10,6 @@ function Counter(props: Props) {
 		setSafeToModify(true);
 	}, [isEditing]);
 	const count = props.initialCount;
-	console.log('React Counter render', { count, safeToModify });
 
 	return (
 		<my-counter
@@ -21,11 +20,7 @@ function Counter(props: Props) {
 			<button data-target="my-counter:dec" className={styles.btn}>
 				-
 			</button>
-			<span
-				className={styles.count}
-				data-target="my-counter:count"
-				data-builder-editing={isEditing ? 'true' : 'false'}
-			>
+			<span className={styles.count} data-target="my-counter:count">
 				{count}
 			</span>
 			<button data-target="my-counter:inc" className={styles.btn}>

@@ -2,8 +2,6 @@ import { createEffect, createSignal } from 'solid-js';
 import { liftSolid, useAttributes } from '@lift-html/solid';
 import { targetRefs } from '@lift-html/incentive';
 
-console.log('Counter component loaded');
-
 const targets = {
 	inc: HTMLButtonElement,
 	dec: HTMLButtonElement,
