@@ -1,8 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
-import ReactCounter from '../components/ReactCounter.tsx';
-import SolidCounter from '../components/solid/SolidCounter.tsx';
 
 export const prerender = true;
 ---
@@ -18,11 +16,6 @@ export const prerender = true;
 			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message
 			above.
 		</p>
-		<section class="counters">
-			<h2>Counters</h2>
-			<ReactCounter client:load />
-			<SolidCounter client:load />
-		</section>
 		<ul role="list" class="link-card-grid">
 			<Card
 				href="https://docs.astro.build/"
@@ -91,30 +84,6 @@ export const prerender = true;
 		padding: 1rem;
 		border-radius: 0.4rem;
 		color: var(--color-bg);
-	}
-
-	.counters {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		align-items: center;
-		margin: 1rem 0 1.5rem;
-	}
-
-	.counters h2 {
-		width: 100%;
-		margin: 0;
-		font-size: 1.25rem;
-	}
-
-	.counters button {
-		font: inherit;
-		cursor: pointer;
-		border: 0.1em solid var(--color-border);
-		border-radius: 0.4rem;
-		padding: 0.4rem 0.75rem;
-		background: var(--color-bg);
-		color: var(--color-text);
 	}
 
 	.instructions code {
