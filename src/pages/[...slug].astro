@@ -6,14 +6,12 @@ import BuilderContent from '../builder/BuilderContent';
 import {
 	BUILDER_API_KEY,
 	BUILDER_MODEL,
-	getRequestMode,
+	isEditorOrPreview,
 } from '../builder/config';
-import { collectComponents } from '../builder/collect-content';
-import type { RegisteredName } from '../builder/builder-registry';
 import { wcLoaders } from '../builder/wc-loaders';
 
 const pathname = Astro.url.pathname;
-const mode = getRequestMode(Astro.url);
+const previewing = isEditorOrPreview(Astro.url);
 const content = await fetchOneEntry({
 	model: BUILDER_MODEL,
 	apiKey: BUILDER_API_KEY,
@@ -22,16 +20,11 @@ const content = await fetchOneEntry({
 	enrich: true,
 });
 
-if (!content && !mode.previewing) {
+if (!content && !previewing) {
 	return Astro.rewrite('/404');
 }
 
-const loaders = mode.editing
-	? Object.values(wcLoaders).flat()
-	: [...collectComponents(content)].flatMap(
-			(name) => wcLoaders[name as RegisteredName] ?? [],
-		);
-const uniqueLoaders = [...new Set(loaders)];
+const uniqueLoaders = [...new Set(Object.values(wcLoaders).flat())];
 const title =
 	(typeof content?.data?.title === 'string' && content.data.title) ||
 	'Builder.io';
@@ -50,11 +43,11 @@ const description =
 	</head>
 	<body>
 		<BuilderContent
-			client:idle={mode.previewing}
+			client:idle={previewing}
 			apiKey={BUILDER_API_KEY}
 			model={BUILDER_MODEL}
 			content={content}
-			isEditing={mode.previewing}
+			isEditing={previewing}
 		/>
 		{uniqueLoaders.map((Loader) => (
 			<Loader />

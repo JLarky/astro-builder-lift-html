@@ -13,10 +13,11 @@ export const BUILDER_API_KEY =
  * is useless during SSR. Preview mode is `builder.preview=` and does work on
  * the server via `isPreviewing(searchParams)`.
  */
-export function getRequestMode(url: URL) {
+export function isEditorOrPreview(url: URL) {
 	const sp = url.searchParams;
-	const editing =
-		sp.has('__builder_editing__') || sp.has('builder.frameEditing');
-	const previewing = editing || isPreviewing(sp);
-	return { editing, previewing };
+	return (
+		sp.has('__builder_editing__') ||
+		sp.has('builder.frameEditing') ||
+		isPreviewing(sp)
+	);
 }
