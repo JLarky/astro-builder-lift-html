@@ -9,7 +9,7 @@
 		"astro": "astro",
 		"fmt": "prettier --cache --write .",
 		"fmt:check": "prettier --cache --check .",
-		"check": "astro check"
+		"check": "astro check --minimumFailingSeverity warning"
 	},
 	"dependencies": {
 		"@astrojs/node": "^11.1.6",
