@@ -14,10 +14,10 @@ function InvalidProps({
 }: {
 	attributes?: unknown;
 	error: string;
-	issues: readonly v.BaseIssue<unknown>[];
+	issues?: readonly v.BaseIssue<unknown>[];
 	children?: React.ReactNode;
 }) {
-	const firstIssue = issues[0]?.message;
+	const firstIssue = issues?.[0]?.message;
 	return (
 		<div
 			data-failure="failed-to-load"
@@ -33,10 +33,12 @@ function InvalidProps({
 			}}
 		>
 			<div>{error}</div>
-			<div>
-				{issues.length} issue{issues.length === 1 ? '' : 's'}
-				{firstIssue ? `: ${firstIssue}` : ''}
-			</div>
+			{issues && issues.length > 0 ? (
+				<div>
+					{issues.length} issue{issues.length === 1 ? '' : 's'}
+					{firstIssue ? `: ${firstIssue}` : ''}
+				</div>
+			) : null}
 			{children}
 		</div>
 	);
@@ -56,12 +58,14 @@ function isValibotObjectSchema(
 /**
  * Compare Builder input names with Valibot object-schema keys.
  * Called once from `createBuilderComponent`, and only in development.
+ * Returns the mismatch message instead of throwing, so SSR can render it
+ * in place of the component.
  */
 function checkBuilderInputsMatchSchema(
 	name: string,
 	inputs: readonly { name: string }[],
 	schema: ValibotSchema,
-) {
+): string | undefined {
 	if (!isValibotObjectSchema(schema)) {
 		console.warn(
 			`${name}: skipped Builder inputs/schema check because the schema is not a Valibot object schema (v.object); got type "${schema.type}".`,
@@ -92,7 +96,7 @@ function checkBuilderInputsMatchSchema(
 	].filter((part) => part !== undefined);
 	const message = `${name}: Builder inputs and Valibot schema keys do not match. ${parts.join('. ')}.`;
 	console.error(message);
-	throw new Error(message);
+	return message;
 }
 
 export function createBuilderComponent<
@@ -100,9 +104,9 @@ export function createBuilderComponent<
 	T extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
 >(definition: Omit<RegisteredComponent, 'name'> & { name: N }, inputSchema: T) {
 	const { component, inputs = [], name } = definition;
-	if (import.meta.env.DEV) {
-		checkBuilderInputsMatchSchema(name, inputs, inputSchema);
-	}
+	const schemaMismatch = import.meta.env.DEV
+		? checkBuilderInputsMatchSchema(name, inputs, inputSchema)
+		: undefined;
 	const ResolvedComponent =
 		component as React.ComponentType<BuilderPassthroughProps>;
 
@@ -113,6 +117,9 @@ export function createBuilderComponent<
 		children,
 		...rest
 	}: BuilderPassthroughProps) {
+		if (schemaMismatch) {
+			return <InvalidProps error={schemaMismatch}>{children}</InvalidProps>;
+		}
 		const result = v.safeParse(inputSchema, rest);
 		if (result.success) {
 			return (
