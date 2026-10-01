@@ -1,8 +1,14 @@
+import type { BuilderBlock } from '@builder.io/sdk-react';
+
 /**
  * Walk Builder JSON for custom component names. The walk is generic so
  * Columns, uiBlocks, symbols, and A/B variations are covered without
  * per-block knowledge.
  */
+function isBuilderBlock(node: object): node is BuilderBlock {
+	return '@type' in node && node['@type'] === '@builder.io/sdk:Element';
+}
+
 export function collectComponents(root: unknown) {
 	const components = new Set<string>();
 	const seen = new WeakSet<object>();
@@ -13,17 +19,11 @@ export function collectComponents(root: unknown) {
 			node.forEach(walk);
 			return;
 		}
-		const record = node as Record<string, unknown>;
-		const component = record.component;
-		if (
-			record['@type'] === '@builder.io/sdk:Element' &&
-			component &&
-			typeof component === 'object'
-		) {
-			const name = (component as Record<string, unknown>).name;
+		if (isBuilderBlock(node)) {
+			const name = node.component?.name;
 			if (typeof name === 'string') components.add(name);
 		}
-		for (const value of Object.values(record)) walk(value);
+		for (const value of Object.values(node)) walk(value);
 	};
 	walk(root);
 	return components;
