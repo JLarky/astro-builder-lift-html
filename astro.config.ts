@@ -11,6 +11,8 @@ const solidFiles = '**/solid/**';
 
 export default defineConfig({
 	output: 'server',
+	// Redirects `/path/` before the page runs (301 for GET).
+	trailingSlash: 'never',
 	adapter: localPreview
 		? node({
 				mode: 'standalone',

@@ -10,14 +10,7 @@ interface PageProps {
 }
 
 export default function Page(props: PageProps) {
-	if (!props.content) {
-		return (
-			<>
-				<h1>404</h1>
-				<p>Make sure you have your content published at Builder.io.</p>
-			</>
-		);
-	}
+	// Null content is an empty canvas, not an in-component 404.
 	return (
 		<OptionsProvider isEditing={props.isEditing}>
 			<Content
