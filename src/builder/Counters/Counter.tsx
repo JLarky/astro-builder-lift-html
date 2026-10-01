@@ -1,9 +1,8 @@
 import styles from './styles.module.css';
 import type { Props } from './CounterRC';
-import { useOptions, useSafeToModify } from '../OptionsProvider';
+import { useSafeToModify } from '../OptionsProvider';
 
 function Counter(props: Props) {
-	const { isEditing } = useOptions();
 	const safeToModify = useSafeToModify();
 	const count = props.initialCount;
 
