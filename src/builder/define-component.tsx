@@ -43,8 +43,9 @@ function InvalidProps({
 }
 
 export function createBuilderComponent<
+	const N extends string,
 	T extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
->(definition: RegisteredComponent, inputSchema: T) {
+>(definition: Omit<RegisteredComponent, 'name'> & { name: N }, inputSchema: T) {
 	const { component, inputs = [], name } = definition;
 	const ResolvedComponent =
 		component as React.ComponentType<BuilderPassthroughProps>;
