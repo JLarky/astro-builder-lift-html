@@ -1,0 +1,63 @@
+---
+export const prerender = false;
+
+import { fetchOneEntry, getBuilderSearchParams } from '@builder.io/sdk-react';
+import BuilderContent from '../builder/BuilderContent';
+import {
+	BUILDER_API_KEY,
+	BUILDER_MODEL,
+	getRequestMode,
+} from '../builder/config';
+import { collectComponents } from '../builder/collect-content';
+import type { RegisteredName } from '../builder/builder-registry';
+import { wcLoaders } from '../builder/wc-loaders';
+
+const pathname = Astro.url.pathname;
+const mode = getRequestMode(Astro.url);
+const content = await fetchOneEntry({
+	model: BUILDER_MODEL,
+	apiKey: BUILDER_API_KEY,
+	userAttributes: { urlPath: pathname },
+	options: getBuilderSearchParams(Astro.url.searchParams),
+	enrich: true,
+});
+
+if (!content && !mode.previewing) {
+	return Astro.rewrite('/404');
+}
+
+const loaders = mode.editing
+	? Object.values(wcLoaders).flat()
+	: [...collectComponents(content)].flatMap(
+			(name) => wcLoaders[name as RegisteredName] ?? [],
+		);
+const uniqueLoaders = [...new Set(loaders)];
+const title =
+	(typeof content?.data?.title === 'string' && content.data.title) ||
+	'Builder.io';
+const description =
+	typeof content?.data?.description === 'string'
+		? content.data.description
+		: undefined;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>{title}</title>
+		{description && <meta name="description" content={description} />}
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+	<body>
+		<BuilderContent
+			client:idle={mode.previewing}
+			apiKey={BUILDER_API_KEY}
+			model={BUILDER_MODEL}
+			content={content}
+			isEditing={mode.previewing}
+		/>
+		{uniqueLoaders.map((Loader) => (
+			<Loader />
+		))}
+	</body>
+</html>

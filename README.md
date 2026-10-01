@@ -19,3 +19,18 @@ Local preview uses the Node adapter instead of Vercel:
 bun run build-preview
 bun run preview
 ```
+
+## Builder pages
+
+`src/pages/[...slug].astro` serves every path except static routes such as `/`. The Builder `urlPath` is the request path. `fetchOneEntry` gets `getBuilderSearchParams` and `enrich: true`, so preview overrides and inlined Symbols are in the server render.
+
+| Request                                                             | Result                                                                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Published page                                                      | 200.                                                                                                         |
+| Unknown path                                                        | HTTP 404 with the not-found page.                                                                            |
+| Trailing slash                                                      | Redirect to the path without the slash (`trailingSlash: 'never'`).                                           |
+| `builder.preview`, `builder.frameEditing`, or `__builder_editing__` | Missing content still renders `<Content>` so the editor has an empty canvas. `client:idle` hydrates the SDK. |
+
+Editing loads every lift-html loader. A published page loads only the loaders for custom components in that content (including components nested in Symbols and variations). `astro check` fails if a registered component has no `wcLoaders` entry.
+
+In the Builder page model, set the preview URL to this site's origin and the dynamic URL to `origin + targeting urlPath`.
