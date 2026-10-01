@@ -35,8 +35,11 @@ const topics: FaqTopic[] = [
 				question: 'Where is the Builder demo?',
 				answer: (
 					<>
-						It stays on <a href="/builder-demo">/builder-demo</a>. This FAQ does
-						not fetch Builder content and does not mount the counter.
+						There is no dedicated /builder-demo page. Published Builder entries
+						are served by the catch-all route at the URL path on the entry. The{' '}
+						<a href="/#builder-pages">homepage</a> and the README cover that
+						route and the __builder_editing__ gate. This FAQ does not fetch
+						Builder content and does not mount the counter.
 					</>
 				),
 			},

@@ -3,32 +3,204 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 
 export const prerender = true;
+
+const YOUTUBE_VIDEO_URL = 'TODO_YOUTUBE_VIDEO_URL'; // replace when published
+
+function youtubeEmbedSrc(url: string): string | null {
+	if (!url.startsWith('https://')) return null;
+	try {
+		const parsed = new URL(url);
+		if (parsed.hostname === 'youtu.be') {
+			const id = parsed.pathname.replace(/^\//, '');
+			return id ? `https://www.youtube.com/embed/${id}` : null;
+		}
+		if (
+			parsed.hostname === 'www.youtube.com' ||
+			parsed.hostname === 'youtube.com'
+		) {
+			const watchId = parsed.searchParams.get('v');
+			if (watchId) return `https://www.youtube.com/embed/${watchId}`;
+			const parts = parsed.pathname.split('/').filter(Boolean);
+			const marker = parts[0];
+			const id = parts[1];
+			if (
+				(marker === 'embed' || marker === 'shorts' || marker === 'live') &&
+				id
+			) {
+				return `https://www.youtube.com/embed/${id}`;
+			}
+		}
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
+const videoReady = YOUTUBE_VIDEO_URL.startsWith('https://');
 ---
 
 <Layout title="astro-builder-lift-html">
 	<main>
 		<p class="kicker">Astro · Builder.io · lift-html</p>
 		<h1>
-			A Builder.io page with a <span class="text-gradient">lift-html</span>{' '}
-			counter
+			Builder.io pages in Astro with a{' '}
+			<span class="text-gradient">lift-html</span> bundle
 		</h1>
 		<p class="lead">
-			This is a demo of a published Builder.io page and a lift-html counter.
-			Open <a href="/builder-demo">/builder-demo</a> to see it, or the{' '}
-			<a href="/react-faq">React FAQ</a> for a separate tabbed island. See the
-			README for how to run locally.
+			This repo renders <a href="https://www.builder.io/">Builder.io</a> pages
+			in Astro. Custom components are React. Interactive pieces that ship to
+			visitors are <a href="https://github.com/JLarky/lift-html">lift-html</a>{' '}
+			web components, so a production page is not paying for the Builder SDK and
+			React on every block. The README's figure is 300 kilobytes gzipped down to
+			10 kilobytes gzipped. The editor keeps the full React tree.
 		</p>
+
+		<section class="video" aria-labelledby="video-heading">
+			<h2 id="video-heading">Video</h2>
+			{videoEmbedSrc ? (
+				<>
+					<iframe
+						class="video-frame"
+						src={videoEmbedSrc}
+						title="astro-builder-lift-html walkthrough"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowfullscreen
+					/>
+					<p>
+						<a href={YOUTUBE_VIDEO_URL}>Open the video on YouTube</a>
+					</p>
+				</>
+			) : videoReady ? (
+				<p>
+					<a href={YOUTUBE_VIDEO_URL}>Watch the video</a>
+				</p>
+			) : (
+				<div class="video-soon">
+					<p class="video-soon-label">Video coming soon</p>
+					<p>
+						The embed reads <code>YOUTUBE_VIDEO_URL</code> in{' '}
+						<code>src/pages/index.astro</code>. The value is still{' '}
+						<code>TODO_YOUTUBE_VIDEO_URL</code>.
+					</p>
+				</div>
+			)}
+		</section>
+
+		<section>
+			<h2>lift-html, and the React escape hatch</h2>
+			<p>
+				Counter is the lift-html pattern. The React component registered with
+				Builder renders a <code>&lt;my-counter&gt;</code> element. The behavior
+				lives in a Solid element from <code>@lift-html/solid</code>, loaded by{' '}
+				<code>src/builder/Counters/wc/Loader.astro</code>. A published page
+				includes that loader and does not hydrate the Builder React tree, so the
+				buttons still work.
+			</p>
+			<p>
+				The escape hatch is a React component registered as a Builder custom
+				component with no web component. It has no <code>wc/Loader.astro</code>{' '}
+				(an empty loader list). The editor can still hydrate it. A published
+				page server-renders it and does not ship that React component to the
+				client. FAQ demos are being added to show both patterns.{' '}
+				<a href="/react-faq">/react-faq</a> is a separate React island, not a
+				Builder component.
+			</p>
+		</section>
+
+		<section>
+			<h2>Where a component lives</h2>
+			<p>
+				<a href="https://github.com/JLarky/astro-builder-lift-html/pull/37">
+					PR #37
+				</a>{' '}
+				(open, not merged) is landing auto-discovery. The convention is{' '}
+				<code>src/builder/&lt;Folder&gt;/definition.ts</code>, plus an optional{' '}
+				<code>wc/Loader.astro</code> when the component has a lifted element.
+				Discovery is in flight on that PR.
+			</p>
+			<p>
+				On main the lists are still written by hand. Counter is{' '}
+				<code>src/builder/Counters/CounterRC.ts</code>, registered from{' '}
+				<code>src/builder/builder-registry.ts</code>.{' '}
+				<code>src/builder/wc-loaders.ts</code> maps each registered name to
+				loader modules. An empty array means no lifted element. Missing a name
+				fails <code>astro check</code>.
+			</p>
+		</section>
+
+		<section id="builder-pages">
+			<h2>How a Builder page is served</h2>
+			<p>
+				<a href="https://github.com/JLarky/astro-builder-lift-html/pull/36">
+					PR #36
+				</a>{' '}
+				(merged) removed <code>src/pages/builder-demo.astro</code>. Published
+				entries are served by the catch-all{' '}
+				<a href="https://github.com/JLarky/astro-builder-lift-html/blob/main/src/pages/%5B...slug%5D.astro">
+					<code>src/pages/[...slug].astro</code>
+				</a>{' '}
+				at the URL path stored on the entry. <code>getBuilderContent</code> in{' '}
+				<code>src/builder/builder.ts</code> loads the <code>page</code> model.{' '}
+				<code>BuilderContentAstro</code> renders it. No content, and not
+				editing, rewrites to <code>/404</code>.
+			</p>
+			<p>
+				Editing is <code>searchParams.has('__builder_editing__')</code>. That
+				gate is the <code>__builder_editing__</code> search param. It is
+				separate from SDK <code>isEditing()</code>, and it is separate from a{' '}
+				<code>builder.editing</code> param. With{' '}
+				<code>__builder_editing__</code> set, every <code>wcLoaders</code> entry
+				is included and <code>BuilderContent</code> hydrates with{' '}
+				<code>client:idle</code>. A published page includes only the loaders for
+				components present in that entry, and renders with no client directive.
+			</p>
+		</section>
+
+		<section>
+			<h2>README</h2>
+			<p>
+				Setup (<code>bun install</code>, <code>bun dev</code>,{' '}
+				<code>bun run build-preview</code>) and the format and astro check CI
+				job are in the{' '}
+				<a href="https://github.com/JLarky/astro-builder-lift-html#readme">
+					README
+				</a>
+				. The same placeholder token, <code>TODO_YOUTUBE_VIDEO_URL</code>, is
+				there too. These pull requests are open and not merged:
+			</p>
+			<ul>
+				<li>
+					<a href="https://github.com/JLarky/astro-builder-lift-html/pull/38">
+						#38
+					</a>{' '}
+					checks Builder input names against Valibot schema keys, in dev.
+				</li>
+				<li>
+					<a href="https://github.com/JLarky/astro-builder-lift-html/pull/37">
+						#37
+					</a>{' '}
+					auto-discovers <code>definition.ts</code> folders.
+				</li>
+				<li>
+					<a href="https://github.com/JLarky/astro-builder-lift-html/pull/40">
+						#40
+					</a>{' '}
+					passes slot children through <code>BuilderContent</code>.
+				</li>
+			</ul>
+		</section>
 
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="/builder-demo"
-				title="Builder demo"
-				body="The published Builder.io page and the lift-html counter."
-			/>
-			<Card
 				href="/react-faq"
 				title="React FAQ"
-				body="A plain React tabbed FAQ, with topics and expandable answers."
+				body="A plain React tabbed FAQ on its own route. Not a Builder custom component."
+			/>
+			<Card
+				href="https://github.com/JLarky/astro-builder-lift-html"
+				title="GitHub"
+				body="Source and README. Builder pages are the catch-all slug route."
 			/>
 			<Card
 				href="https://github.com/JLarky/lift-html"
@@ -38,7 +210,7 @@ export const prerender = true;
 			<Card
 				href="https://www.builder.io/"
 				title="Builder.io"
-				body="The visual editor for the page this demo renders."
+				body="The visual editor. Published page entries are served by the catch-all."
 			/>
 		</ul>
 	</main>
@@ -118,6 +290,49 @@ export const prerender = true;
 
 	section a {
 		color: inherit;
+	}
+
+	section ul {
+		margin: 0.6rem 0 0;
+		padding-left: 1.2rem;
+		line-height: 1.6;
+	}
+
+	section li {
+		margin: 0.35rem 0;
+	}
+
+	.video-soon {
+		display: grid;
+		align-content: center;
+		gap: 0.5rem;
+		box-sizing: border-box;
+		margin-top: 0.75rem;
+		min-height: 16rem;
+		padding: 1.25rem;
+		border: 2px dashed #4f39fa;
+		border-radius: 0.5rem;
+		background: white;
+	}
+
+	.video-soon p {
+		margin: 0;
+	}
+
+	.video-soon-label {
+		font-size: 1.25rem;
+		font-weight: 800;
+		color: #4f39fa;
+	}
+
+	.video-frame {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		margin-top: 0.75rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: white;
 	}
 
 	.link-card-grid {
