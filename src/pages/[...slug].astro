@@ -6,12 +6,10 @@ import {
 	BUILDER_API_KEY,
 	BUILDER_MODEL,
 	getRequestMode,
-	isUncachedBuilderRequest,
 } from '../builder/config';
 import { loadPage } from '../builder/load-page';
 import type { RegisteredName } from '../builder/builder-registry';
 import { wcLoaders } from '../builder/wc-loaders';
-import NotFound from '../components/NotFound.astro';
 
 const pathname = Astro.url.pathname;
 if (pathname.length > 1 && pathname.endsWith('/')) {
@@ -19,44 +17,25 @@ if (pathname.length > 1 && pathname.endsWith('/')) {
 }
 
 const mode = getRequestMode(Astro.url);
-const uncached = isUncachedBuilderRequest(Astro.url);
 const assetMiss = isAssetLikePath(pathname);
 const result = assetMiss
 	? ({ kind: 'not-found' } as const)
 	: await loadPage(pathname, Astro.url, {
 			previewing: mode.previewing,
-			cacheable: !uncached,
 		});
 
-if (uncached) {
-	Astro.cache.set(false);
-	Astro.response.headers.set('Cache-Control', 'private, no-store');
+if (assetMiss || (result.kind === 'not-found' && !mode.previewing)) {
+	return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+if (mode.previewing) {
 	Astro.response.headers.set('X-Robots-Tag', 'noindex');
 }
 
-const showBuilder =
-	!assetMiss &&
-	(result.kind === 'ok' || (result.kind === 'not-found' && mode.previewing));
-
-if (assetMiss || (result.kind === 'not-found' && !mode.previewing)) {
-	Astro.response.status = 404;
-	Astro.response.statusText = 'Not Found';
-	if (!uncached) Astro.cache.set({ maxAge: 60 });
-} else if (result.kind === 'unavailable') {
+if (result.kind === 'unavailable') {
 	Astro.response.status = 503;
 	Astro.response.statusText = 'Service Unavailable';
 	Astro.response.headers.set('Retry-After', '30');
-	Astro.cache.set(false);
-	Astro.response.headers.set('Cache-Control', 'private, no-store');
-} else if (result.kind === 'ok' && result.stale) {
-	Astro.cache.set({ maxAge: 30 });
-	Astro.response.headers.set('X-Content-Source', 'fallback');
-} else if (result.kind === 'ok' && !uncached) {
-	Astro.cache.set({
-		maxAge: 3600,
-		swr: 86400,
-		tags: result.tags,
-	});
 }
 
 const content = result.kind === 'ok' ? result.content : null;
@@ -83,7 +62,23 @@ function isAssetLikePath(path: string) {
 }
 ---
 
-{showBuilder ? (
+{result.kind === 'unavailable' ? (
+	<html lang="en">
+		<head>
+			<meta charset="utf-8" />
+			<title>Temporarily unavailable</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+		</head>
+		<body>
+			<h1>Temporarily unavailable</h1>
+			{mode.previewing ? (
+				<p>{errorMessage}</p>
+			) : (
+				<p>This page can't be loaded right now. Try again shortly.</p>
+			)}
+		</body>
+	</html>
+) : (
 	<html lang="en">
 		<head>
 			<meta charset="utf-8" />
@@ -125,22 +120,4 @@ function isAssetLikePath(path: string) {
 			</script>}
 		</body>
 	</html>
-) : result.kind === 'unavailable' ? (
-	<html lang="en">
-		<head>
-			<meta charset="utf-8" />
-			<title>Temporarily unavailable</title>
-			<meta name="viewport" content="width=device-width, initial-scale=1" />
-		</head>
-		<body>
-			<h1>Temporarily unavailable</h1>
-			{mode.previewing ? (
-				<p>{errorMessage}</p>
-			) : (
-				<p>This page can't be loaded right now. Try again shortly.</p>
-			)}
-		</body>
-	</html>
-) : (
-	<NotFound />
 )}
