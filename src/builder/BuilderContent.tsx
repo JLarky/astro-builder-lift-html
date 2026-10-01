@@ -10,14 +10,8 @@ interface PageProps {
 }
 
 export default function Page(props: PageProps) {
-	if (!props.content) {
-		return (
-			<>
-				<h1>404</h1>
-				<p>Make sure you have your content published at Builder.io.</p>
-			</>
-		);
-	}
+	// Null content is an empty canvas. The catch-all only renders this while
+	// editing or previewing; visitors without content get a real 404 instead.
 	return (
 		<OptionsProvider isEditing={props.isEditing}>
 			<Content

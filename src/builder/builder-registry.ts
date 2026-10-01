@@ -7,6 +7,8 @@ export const customComponents = [
 	CounterComponent,
 ] satisfies RegisteredComponent[];
 
+export type RegisteredName = (typeof customComponents)[number]['name'];
+
 declare module 'react' {
 	namespace JSX {
 		interface IntrinsicElements extends Reactify<

@@ -1,0 +1,146 @@
+---
+export const prerender = false;
+
+import BuilderContent from '../builder/BuilderContent';
+import {
+	BUILDER_API_KEY,
+	BUILDER_MODEL,
+	getRequestMode,
+	isUncachedBuilderRequest,
+} from '../builder/config';
+import { loadPage } from '../builder/load-page';
+import type { RegisteredName } from '../builder/builder-registry';
+import { wcLoaders } from '../builder/wc-loaders';
+import NotFound from '../components/NotFound.astro';
+
+const pathname = Astro.url.pathname;
+if (pathname.length > 1 && pathname.endsWith('/')) {
+	return Astro.redirect(pathname.replace(/\/+$/, '') + Astro.url.search, 308);
+}
+
+const mode = getRequestMode(Astro.url);
+const uncached = isUncachedBuilderRequest(Astro.url);
+const assetMiss = isAssetLikePath(pathname);
+const result = assetMiss
+	? ({ kind: 'not-found' } as const)
+	: await loadPage(pathname, Astro.url, {
+			previewing: mode.previewing,
+			cacheable: !uncached,
+		});
+
+if (uncached) {
+	Astro.cache.set(false);
+	Astro.response.headers.set('Cache-Control', 'private, no-store');
+	Astro.response.headers.set('X-Robots-Tag', 'noindex');
+}
+
+const showBuilder =
+	!assetMiss &&
+	(result.kind === 'ok' || (result.kind === 'not-found' && mode.previewing));
+
+if (assetMiss || (result.kind === 'not-found' && !mode.previewing)) {
+	Astro.response.status = 404;
+	Astro.response.statusText = 'Not Found';
+	if (!uncached) Astro.cache.set({ maxAge: 60 });
+} else if (result.kind === 'unavailable') {
+	Astro.response.status = 503;
+	Astro.response.statusText = 'Service Unavailable';
+	Astro.response.headers.set('Retry-After', '30');
+	Astro.cache.set(false);
+	Astro.response.headers.set('Cache-Control', 'private, no-store');
+} else if (result.kind === 'ok' && result.stale) {
+	Astro.cache.set({ maxAge: 30 });
+	Astro.response.headers.set('X-Content-Source', 'fallback');
+} else if (result.kind === 'ok' && !uncached) {
+	Astro.cache.set({
+		maxAge: 3600,
+		swr: 86400,
+		tags: result.tags,
+	});
+}
+
+const content = result.kind === 'ok' ? result.content : null;
+const title =
+	(typeof content?.data?.title === 'string' && content.data.title) ||
+	'Builder.io';
+const description =
+	typeof content?.data?.description === 'string'
+		? content.data.description
+		: undefined;
+const errorMessage = result.kind === 'unavailable' ? result.message : '';
+const loaders = mode.editing
+	? Object.values(wcLoaders).flat()
+	: result.kind === 'ok'
+		? [...result.components].flatMap(
+				(name) => wcLoaders[name as RegisteredName] ?? [],
+			)
+		: [];
+const uniqueLoaders = [...new Set(loaders)];
+
+function isAssetLikePath(path: string) {
+	const segment = path.split('/').pop() ?? '';
+	return segment.includes('.');
+}
+---
+
+{showBuilder ? (
+	<html lang="en">
+		<head>
+			<meta charset="utf-8" />
+			<title>{title}</title>
+			{description && <meta name="description" content={description} />}
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+		</head>
+		<body>
+			<h1>Hello</h1>
+			{mode.previewing ? (
+				<BuilderContent
+					client:idle
+					apiKey={BUILDER_API_KEY}
+					model={BUILDER_MODEL}
+					content={content}
+					isEditing={mode.previewing}
+				/>
+			) : (
+				<BuilderContent
+					apiKey={BUILDER_API_KEY}
+					model={BUILDER_MODEL}
+					content={content}
+					isEditing={false}
+				/>
+			)}
+			{uniqueLoaders.map((Loader) => (
+				<Loader />
+			))}
+			{import.meta.env.DEV && <script is:inline>
+				addEventListener('load', () => {
+					for (const el of document.querySelectorAll(':not(:defined)')) {
+						if (el.localName.includes('-')) {
+							console.warn(
+								`rendered <${el.localName}> but its loader wasn't included`,
+							);
+						}
+					}
+				});
+			</script>}
+		</body>
+	</html>
+) : result.kind === 'unavailable' ? (
+	<html lang="en">
+		<head>
+			<meta charset="utf-8" />
+			<title>Temporarily unavailable</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+		</head>
+		<body>
+			<h1>Temporarily unavailable</h1>
+			{mode.previewing ? (
+				<p>{errorMessage}</p>
+			) : (
+				<p>This page can't be loaded right now. Try again shortly.</p>
+			)}
+		</body>
+	</html>
+) : (
+	<NotFound />
+)}

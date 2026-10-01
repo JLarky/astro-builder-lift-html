@@ -1,0 +1,15 @@
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import CounterLoader from './Counters/wc/Loader.astro';
+import type { RegisteredName } from './builder-registry';
+
+/**
+ * Server-only. Import this from `.astro` files, not from the React registry:
+ * the editing island bundles the registry for the browser, and these loaders
+ * are Astro script components.
+ *
+ * An empty array means the component has no lifted element. `astro check`
+ * fails when a registered component is missing from this map.
+ */
+export const wcLoaders = {
+	Counter: [CounterLoader],
+} satisfies Record<RegisteredName, AstroComponentFactory[]>;
