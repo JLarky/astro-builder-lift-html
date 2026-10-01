@@ -3,7 +3,9 @@ import { apiKey } from '../config';
 import { collectComponents } from './collect-content';
 import { wcLoaders } from './wc-loaders';
 
-function isLoaderName(name: string): name is keyof typeof wcLoaders {
+function isLoaderName(
+	name: string,
+): name is Extract<keyof typeof wcLoaders, string> {
 	return Object.hasOwn(wcLoaders, name);
 }
 

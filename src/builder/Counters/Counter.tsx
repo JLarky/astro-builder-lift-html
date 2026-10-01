@@ -1,5 +1,5 @@
 import styles from './styles.module.css';
-import type { Props } from './CounterRC';
+import type { Props } from './definition';
 import { useSafeToModify } from '../OptionsProvider';
 
 function Counter(props: Props) {
