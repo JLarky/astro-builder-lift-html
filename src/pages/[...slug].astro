@@ -1,16 +1,33 @@
 ---
 export const prerender = false;
 
-import { fetchOneEntry, getBuilderSearchParams } from '@builder.io/sdk-react';
-import BuilderContent from '../builder/BuilderContent';
 import {
-	BUILDER_API_KEY,
-	BUILDER_MODEL,
-	getRequestMode,
-} from '../builder/config';
+	fetchOneEntry,
+	getBuilderSearchParams,
+	isPreviewing,
+} from '@builder.io/sdk-react';
+import BuilderContent from '../builder/BuilderContent';
 import { collectComponents } from '../builder/collect-content';
 import type { RegisteredName } from '../builder/builder-registry';
 import { wcLoaders } from '../builder/wc-loaders';
+
+const BUILDER_MODEL = 'page';
+const DEMO_PUBLIC_API_KEY = 'dbca46c0d48940b09ef11fa8978c6dea';
+const BUILDER_API_KEY =
+	import.meta.env.PUBLIC_BUILDER_API_KEY || DEMO_PUBLIC_API_KEY;
+
+/**
+ * `isEditing()` from the SDK only returns true inside the editor iframe, so it
+ * is useless during SSR. Preview mode is `builder.preview=` and does work on
+ * the server via `isPreviewing(searchParams)`.
+ */
+function getRequestMode(url: URL) {
+	const sp = url.searchParams;
+	const editing =
+		sp.has('__builder_editing__') || sp.has('builder.frameEditing');
+	const previewing = editing || isPreviewing(sp);
+	return { editing, previewing };
+}
 
 const pathname = Astro.url.pathname;
 const mode = getRequestMode(Astro.url);
