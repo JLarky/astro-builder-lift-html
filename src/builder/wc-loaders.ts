@@ -1,5 +1,6 @@
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import CounterLoader from './Counters/wc/Loader.astro';
+import FaqLiftLoader from './FaqLift/wc/Loader.astro';
 import type { RegisteredName } from './builder-registry';
 
 /**
@@ -12,4 +13,6 @@ import type { RegisteredName } from './builder-registry';
  */
 export const wcLoaders = {
 	Counter: [CounterLoader],
+	FaqReact: [],
+	FaqLift: [FaqLiftLoader],
 } satisfies Record<RegisteredName, AstroComponentFactory[]>;
