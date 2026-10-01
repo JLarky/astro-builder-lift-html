@@ -20,7 +20,11 @@ const { isEditing, content, model, apiKey } = Astro.props;
 			model={model}
 			content={content}
 			isEditing={true}
-		/>
+		>
+			<span slot="outlet">this is outlet</span>
+			<span slot="footer">this is footer</span>
+			<span slot="header">this is header</span>
+		</BuilderContent>
 	) : (
 		<BuilderContent
 			apiKey={apiKey}

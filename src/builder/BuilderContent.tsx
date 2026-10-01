@@ -7,9 +7,9 @@ interface PageProps {
 	model: string;
 	content: BuilderContent | null;
 	isEditing: boolean;
-	outlet: React.ReactNode;
-	footer: React.ReactNode;
-	header: React.ReactNode;
+	outlet?: React.ReactNode;
+	footer?: React.ReactNode;
+	header?: React.ReactNode;
 }
 
 export default function Page(props: PageProps) {

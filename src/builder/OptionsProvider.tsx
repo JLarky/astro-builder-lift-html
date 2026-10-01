@@ -1,15 +1,27 @@
 import React from 'react';
 
-const OptionsContext = React.createContext({ isEditing: false });
+type Options = {
+	isEditing: boolean;
+	outlet?: React.ReactNode;
+	footer?: React.ReactNode;
+	header?: React.ReactNode;
+};
+
+const OptionsContext = React.createContext<Options>({ isEditing: false });
 
 export function OptionsProvider({
 	isEditing,
+	outlet,
+	footer,
+	header,
 	children,
-}: {
-	isEditing: boolean;
+}: Options & {
 	children: React.ReactNode;
 }) {
-	const value = React.useMemo(() => ({ isEditing }), [isEditing]);
+	const value = React.useMemo(
+		() => ({ isEditing, outlet, footer, header }),
+		[isEditing, outlet, footer, header],
+	);
 	return (
 		<OptionsContext.Provider value={value}>{children}</OptionsContext.Provider>
 	);
