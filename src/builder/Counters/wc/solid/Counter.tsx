@@ -8,8 +8,10 @@ const targets = {
 	count: HTMLSpanElement,
 };
 
-const MyCounterClass = liftSolid('my-counter', {
-	observedAttributes: ['initial-count', 'safe-to-modify'],
+const element = 'my-counter';
+
+const MyCounterClass = liftSolid(element, {
+	observedAttributes: ['initial-count', 'safe-to-modify'] as const,
 	init(onCleanup) {
 		const refs = targetRefs(this, targets);
 		if (!refs.count) {
@@ -55,7 +57,7 @@ const MyCounterClass = liftSolid('my-counter', {
 
 declare module '@lift-html/core' {
 	interface KnownElements {
-		'my-counter': typeof MyCounterClass & {
+		[element]: typeof MyCounterClass & {
 			props: { 'initial-count': number; 'safe-to-modify': `${boolean}` };
 		};
 	}
