@@ -57,6 +57,7 @@ export function createBuilderComponent<
 		children,
 		...rest
 	}: BuilderPassthroughProps) {
+		// TODO: Walk through schema and inputs and check that they are matching
 		const result = v.safeParse(inputSchema, rest);
 		if (result.success) {
 			return (
