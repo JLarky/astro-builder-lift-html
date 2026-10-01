@@ -42,11 +42,67 @@ function InvalidProps({
 	);
 }
 
+type ValibotSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
+
+function isValibotObjectSchema(
+	schema: ValibotSchema,
+): schema is v.ObjectSchema<
+	v.ObjectEntries,
+	v.ErrorMessage<v.ObjectIssue> | undefined
+> {
+	return schema.type === 'object' && schema.reference === v.object;
+}
+
+/**
+ * Compare Builder input names with Valibot object-schema keys.
+ * Called once from `createBuilderComponent`, and only in development.
+ */
+function checkBuilderInputsMatchSchema(
+	name: string,
+	inputs: readonly { name: string }[],
+	schema: ValibotSchema,
+) {
+	if (!isValibotObjectSchema(schema)) {
+		console.warn(
+			`${name}: skipped Builder inputs/schema check because the schema is not a Valibot object schema (v.object); got type "${schema.type}".`,
+		);
+		return;
+	}
+
+	const schemaKeys = new Set(Object.keys(schema.entries));
+	const inputNames = new Set(inputs.map((input) => input.name));
+	const inputsNotInSchema = [...inputNames].filter(
+		(inputName) => !schemaKeys.has(inputName),
+	);
+	const schemaFieldsWithoutInput = [...schemaKeys].filter(
+		(key) => !inputNames.has(key),
+	);
+
+	if (inputsNotInSchema.length === 0 && schemaFieldsWithoutInput.length === 0) {
+		return;
+	}
+
+	const parts = [
+		inputsNotInSchema.length > 0
+			? `inputs not in the schema: ${inputsNotInSchema.join(', ')}`
+			: undefined,
+		schemaFieldsWithoutInput.length > 0
+			? `schema fields with no input: ${schemaFieldsWithoutInput.join(', ')}`
+			: undefined,
+	].filter((part) => part !== undefined);
+	const message = `${name}: Builder inputs and Valibot schema keys do not match. ${parts.join('. ')}.`;
+	console.error(message);
+	throw new Error(message);
+}
+
 export function createBuilderComponent<
 	const N extends string,
 	T extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
 >(definition: Omit<RegisteredComponent, 'name'> & { name: N }, inputSchema: T) {
 	const { component, inputs = [], name } = definition;
+	if (import.meta.env.DEV) {
+		checkBuilderInputsMatchSchema(name, inputs, inputSchema);
+	}
 	const ResolvedComponent =
 		component as React.ComponentType<BuilderPassthroughProps>;
 
@@ -57,7 +113,6 @@ export function createBuilderComponent<
 		children,
 		...rest
 	}: BuilderPassthroughProps) {
-		// TODO: Walk through schema and inputs and check that they are matching
 		const result = v.safeParse(inputSchema, rest);
 		if (result.success) {
 			return (
