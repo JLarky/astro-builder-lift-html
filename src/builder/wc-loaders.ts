@@ -3,9 +3,9 @@ import CounterLoader from './Counters/wc/Loader.astro';
 import type { RegisteredName } from './builder-registry';
 
 /**
- * Server-only. Import this from `.astro` files, not from the React registry:
- * the editing island bundles the registry for the browser, and these loaders
- * are Astro script components.
+ * Server-only. `getBuilderContent` selects from this map. Do not import it
+ * from the React registry: the editing island bundles the registry for the
+ * browser, and these loaders are Astro script components.
  *
  * An empty array means the component has no lifted element. `astro check`
  * fails when a registered component is missing from this map.
