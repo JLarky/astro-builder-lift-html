@@ -31,6 +31,6 @@ bun run preview
 | Trailing slash                                                      | Redirect to the path without the slash (`trailingSlash: 'never'`).                                           |
 | `builder.preview`, `builder.frameEditing`, or `__builder_editing__` | Missing content still renders `<Content>` so the editor has an empty canvas. `client:idle` hydrates the SDK. |
 
-Editing loads every lift-html loader. A published page loads only the loaders for custom components in that content (including components nested in Symbols and variations). `astro check` fails if a registered component has no `wcLoaders` entry.
+Editing loads every lift-html loader. A published page loads only the loaders for custom components in that content (including components nested in Symbols and variations). A published page does not hydrate the Builder SDK. The document title is Builder.io. `astro check` fails if a registered component has no `wcLoaders` entry.
 
 In the Builder page model, set the preview URL to this site's origin and the dynamic URL to `origin + targeting urlPath`.

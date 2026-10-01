@@ -1,62 +1,77 @@
 ---
 export const prerender = false;
 
-import { fetchOneEntry, getBuilderSearchParams } from '@builder.io/sdk-react';
-import BuilderContent from '../builder/BuilderContent';
 import {
-	BUILDER_API_KEY,
-	BUILDER_MODEL,
-	getRequestMode,
-} from '../builder/config';
+	fetchOneEntry,
+	getBuilderSearchParams,
+	isPreviewing,
+} from '@builder.io/sdk-react';
+import BuilderContent from '../builder/BuilderContent';
 import { collectComponents } from '../builder/collect-content';
 import type { RegisteredName } from '../builder/builder-registry';
 import { wcLoaders } from '../builder/wc-loaders';
 
-const pathname = Astro.url.pathname;
-const mode = getRequestMode(Astro.url);
+const DEMO_PUBLIC_API_KEY = 'dbca46c0d48940b09ef11fa8978c6dea';
+const apiKey = import.meta.env.PUBLIC_BUILDER_API_KEY || DEMO_PUBLIC_API_KEY;
+const model = 'page';
+const searchParams = Astro.url.searchParams;
+
+/**
+ * `isEditing()` from the SDK only returns true inside the editor iframe, so it
+ * is useless during SSR. Preview mode is `builder.preview=` and does work on
+ * the server via `isPreviewing(searchParams)`.
+ */
+const editing =
+	searchParams.has('__builder_editing__') ||
+	searchParams.has('builder.frameEditing');
+const previewing = editing || isPreviewing(searchParams);
 const content = await fetchOneEntry({
-	model: BUILDER_MODEL,
-	apiKey: BUILDER_API_KEY,
-	userAttributes: { urlPath: pathname },
-	options: getBuilderSearchParams(Astro.url.searchParams),
+	model,
+	apiKey,
+	userAttributes: { urlPath: Astro.url.pathname },
+	options: getBuilderSearchParams(searchParams),
 	enrich: true,
 });
 
-if (!content && !mode.previewing) {
+if (!content && !previewing) {
 	return Astro.rewrite('/404');
 }
 
-const loaders = mode.editing
-	? Object.values(wcLoaders).flat()
-	: [...collectComponents(content)].flatMap(
-			(name) => wcLoaders[name as RegisteredName] ?? [],
-		);
-const uniqueLoaders = [...new Set(loaders)];
-const title =
-	(typeof content?.data?.title === 'string' && content.data.title) ||
-	'Builder.io';
-const description =
-	typeof content?.data?.description === 'string'
-		? content.data.description
-		: undefined;
+const loaders = [
+	...new Set(
+		editing
+			? Object.values(wcLoaders).flat()
+			: [...collectComponents(content)].flatMap(
+					(name) => wcLoaders[name as RegisteredName] ?? [],
+				),
+	),
+];
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>{title}</title>
-		{description && <meta name="description" content={description} />}
+		<title>Builder.io</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 	</head>
 	<body>
-		<BuilderContent
-			client:idle={mode.previewing}
-			apiKey={BUILDER_API_KEY}
-			model={BUILDER_MODEL}
-			content={content}
-			isEditing={mode.previewing}
-		/>
-		{uniqueLoaders.map((Loader) => (
+		{previewing ? (
+			<BuilderContent
+				client:idle
+				apiKey={apiKey}
+				model={model}
+				content={content}
+				isEditing={true}
+			/>
+		) : (
+			<BuilderContent
+				apiKey={apiKey}
+				model={model}
+				content={content}
+				isEditing={false}
+			/>
+		)}
+		{loaders.map((Loader) => (
 			<Loader />
 		))}
 	</body>
