@@ -1,0 +1,42 @@
+---
+export const prerender = false;
+
+import { apiKey } from '../config';
+import { getBuilderContent } from '../builder/builder';
+import BuilderContentAstro from '../components/BuilderContentAstro.astro';
+
+const model = 'page';
+
+/**
+ * `isEditing()` from the SDK only returns true inside the editor iframe, so it
+ * is useless during SSR. Editing is the `builder.editing` search param.
+ */
+const { isEditing, content, loaders } = await getBuilderContent(
+	model,
+	Astro.url.pathname,
+	Astro.url.searchParams,
+);
+
+if (!content && !isEditing) {
+	return Astro.rewrite('/404');
+}
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Builder.io</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+	<body>
+		<BuilderContentAstro
+			isEditing={isEditing}
+			content={content}
+			model={model}
+			apiKey={apiKey}
+		/>
+		{loaders.map((Loader) => (
+			<Loader />
+		))}
+	</body>
+</html>

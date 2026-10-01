@@ -1,0 +1,32 @@
+---
+import type { BuilderContent as BuilderContentType } from '@builder.io/sdk-react';
+import BuilderContent from '../builder/BuilderContent';
+
+type Props = {
+	isEditing: boolean;
+	content: BuilderContentType | null;
+	model: string;
+	apiKey: string;
+};
+
+const { isEditing, content, model, apiKey } = Astro.props;
+---
+
+<>
+	{isEditing ? (
+		<BuilderContent
+			client:idle
+			apiKey={apiKey}
+			model={model}
+			content={content}
+			isEditing={true}
+		/>
+	) : (
+		<BuilderContent
+			apiKey={apiKey}
+			model={model}
+			content={content}
+			isEditing={false}
+		/>
+	)}
+</>

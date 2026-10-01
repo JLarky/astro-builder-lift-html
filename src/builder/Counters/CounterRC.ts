@@ -1,8 +1,8 @@
-import { type RegisteredComponent } from '@builder.io/sdk-react';
 import Counter from './Counter';
 import { createBuilderComponent } from '../define-component';
 import * as v from 'valibot';
 
+// import { type RegisteredComponent } from '@builder.io/sdk-react';
 // export const CounterComponent = {
 // 	name: 'Counter',
 // 	component: Counter,
