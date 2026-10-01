@@ -11,6 +11,12 @@ bun install
 bun dev
 ```
 
+## Add a custom component
+
+Add a folder under `src/builder/` with a `definition.ts` that exports `builderComponent` from `createBuilderComponent`. The registry and the loader map both pick that folder up.
+
+Add `wc/Loader.astro` in that folder when the component has a lifted element. A folder without that file gets an empty loader list.
+
 ## Build local preview
 
 Local preview uses the Node adapter instead of Vercel:
