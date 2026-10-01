@@ -32,7 +32,11 @@ const isEditing = Astro.url.searchParams.has('__builder_editing__');
 				model="page"
 				content={content}
 				isEditing={isEditing}
-			/>
+			>
+				<FancyInput client:only="solid" slot="outlet" />
+				<FancyInput client:only="react" slot="footer" />
+				<FancyInput client:visible slot="header" />
+			</BuilderContent>
 		) : (
 			<BuilderContent
 				/* no client:load */
