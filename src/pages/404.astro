@@ -1,7 +1,10 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import NotFound from '../components/NotFound.astro';
+
+Astro.response.status = 404;
+Astro.response.statusText = 'Not Found';
 ---
 
 <NotFound />

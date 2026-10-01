@@ -27,10 +27,9 @@ bun run preview
 | Request                                                             | Result                                                                                                       |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Published page                                                      | 200.                                                                                                         |
-| Unknown path                                                        | HTTP 404. `/file.php` never calls Builder.                                                                   |
-| Trailing slash                                                      | Redirect to the path without the slash (`trailingSlash: 'never'`, 301 for GET).                              |
+| Unknown path                                                        | HTTP 404 with the not-found page.                                                                            |
+| Trailing slash                                                      | Redirect to the path without the slash (`trailingSlash: 'never'`).                                           |
 | `builder.preview`, `builder.frameEditing`, or `__builder_editing__` | Missing content still renders `<Content>` so the editor has an empty canvas. `client:idle` hydrates the SDK. |
-| Builder down                                                        | HTTP 503, `Retry-After: 30`.                                                                                 |
 
 Editing loads every lift-html loader. A published page loads only the loaders for custom components in that content (including components nested in Symbols and variations). `astro check` fails if a registered component has no `wcLoaders` entry.
 

@@ -11,8 +11,7 @@ const solidFiles = '**/solid/**';
 
 export default defineConfig({
 	output: 'server',
-	// `trailingSlash: 'never'` redirects `/path/` before the page runs (301 for
-	// GET). The catch-all also 308s if a slash still reaches it.
+	// Redirects `/path/` before the page runs (301 for GET).
 	trailingSlash: 'never',
 	adapter: localPreview
 		? node({

@@ -6,9 +6,7 @@ export const BUILDER_MODEL = 'page';
 const DEMO_PUBLIC_API_KEY = 'dbca46c0d48940b09ef11fa8978c6dea';
 
 export const BUILDER_API_KEY =
-	import.meta.env.PUBLIC_BUILDER_API_KEY ||
-	process.env.PUBLIC_BUILDER_API_KEY ||
-	DEMO_PUBLIC_API_KEY;
+	import.meta.env.PUBLIC_BUILDER_API_KEY || DEMO_PUBLIC_API_KEY;
 
 /**
  * `isEditing()` from the SDK only returns true inside the editor iframe, so it

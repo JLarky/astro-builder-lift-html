@@ -1,44 +1,37 @@
 ---
 export const prerender = false;
 
+import { fetchOneEntry, getBuilderSearchParams } from '@builder.io/sdk-react';
 import BuilderContent from '../builder/BuilderContent';
 import {
 	BUILDER_API_KEY,
 	BUILDER_MODEL,
 	getRequestMode,
 } from '../builder/config';
-import { loadPage } from '../builder/load-page';
+import { collectComponents } from '../builder/collect-content';
 import type { RegisteredName } from '../builder/builder-registry';
 import { wcLoaders } from '../builder/wc-loaders';
 
 const pathname = Astro.url.pathname;
-if (pathname.length > 1 && pathname.endsWith('/')) {
-	return Astro.redirect(pathname.replace(/\/+$/, '') + Astro.url.search, 308);
-}
-
 const mode = getRequestMode(Astro.url);
-const assetMiss = isAssetLikePath(pathname);
-const result = assetMiss
-	? ({ kind: 'not-found' } as const)
-	: await loadPage(pathname, Astro.url, {
-			previewing: mode.previewing,
-		});
+const content = await fetchOneEntry({
+	model: BUILDER_MODEL,
+	apiKey: BUILDER_API_KEY,
+	userAttributes: { urlPath: pathname },
+	options: getBuilderSearchParams(Astro.url.searchParams),
+	enrich: true,
+});
 
-if (assetMiss || (result.kind === 'not-found' && !mode.previewing)) {
-	return new Response(null, { status: 404, statusText: 'Not Found' });
+if (!content && !mode.previewing) {
+	return Astro.rewrite('/404');
 }
 
-if (mode.previewing) {
-	Astro.response.headers.set('X-Robots-Tag', 'noindex');
-}
-
-if (result.kind === 'unavailable') {
-	Astro.response.status = 503;
-	Astro.response.statusText = 'Service Unavailable';
-	Astro.response.headers.set('Retry-After', '30');
-}
-
-const content = result.kind === 'ok' ? result.content : null;
+const loaders = mode.editing
+	? Object.values(wcLoaders).flat()
+	: [...collectComponents(content)].flatMap(
+			(name) => wcLoaders[name as RegisteredName] ?? [],
+		);
+const uniqueLoaders = [...new Set(loaders)];
 const title =
 	(typeof content?.data?.title === 'string' && content.data.title) ||
 	'Builder.io';
@@ -46,78 +39,25 @@ const description =
 	typeof content?.data?.description === 'string'
 		? content.data.description
 		: undefined;
-const errorMessage = result.kind === 'unavailable' ? result.message : '';
-const loaders = mode.editing
-	? Object.values(wcLoaders).flat()
-	: result.kind === 'ok'
-		? [...result.components].flatMap(
-				(name) => wcLoaders[name as RegisteredName] ?? [],
-			)
-		: [];
-const uniqueLoaders = [...new Set(loaders)];
-
-function isAssetLikePath(path: string) {
-	const segment = path.split('/').pop() ?? '';
-	return segment.includes('.');
-}
 ---
 
-{result.kind === 'unavailable' ? (
-	<html lang="en">
-		<head>
-			<meta charset="utf-8" />
-			<title>Temporarily unavailable</title>
-			<meta name="viewport" content="width=device-width, initial-scale=1" />
-		</head>
-		<body>
-			<h1>Temporarily unavailable</h1>
-			{mode.previewing ? (
-				<p>{errorMessage}</p>
-			) : (
-				<p>This page can't be loaded right now. Try again shortly.</p>
-			)}
-		</body>
-	</html>
-) : (
-	<html lang="en">
-		<head>
-			<meta charset="utf-8" />
-			<title>{title}</title>
-			{description && <meta name="description" content={description} />}
-			<meta name="viewport" content="width=device-width, initial-scale=1" />
-		</head>
-		<body>
-			<h1>Hello</h1>
-			{mode.previewing ? (
-				<BuilderContent
-					client:idle
-					apiKey={BUILDER_API_KEY}
-					model={BUILDER_MODEL}
-					content={content}
-					isEditing={mode.previewing}
-				/>
-			) : (
-				<BuilderContent
-					apiKey={BUILDER_API_KEY}
-					model={BUILDER_MODEL}
-					content={content}
-					isEditing={false}
-				/>
-			)}
-			{uniqueLoaders.map((Loader) => (
-				<Loader />
-			))}
-			{import.meta.env.DEV && <script is:inline>
-				addEventListener('load', () => {
-					for (const el of document.querySelectorAll(':not(:defined)')) {
-						if (el.localName.includes('-')) {
-							console.warn(
-								`rendered <${el.localName}> but its loader wasn't included`,
-							);
-						}
-					}
-				});
-			</script>}
-		</body>
-	</html>
-)}
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>{title}</title>
+		{description && <meta name="description" content={description} />}
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+	<body>
+		<BuilderContent
+			client:idle={mode.previewing}
+			apiKey={BUILDER_API_KEY}
+			model={BUILDER_MODEL}
+			content={content}
+			isEditing={mode.previewing}
+		/>
+		{uniqueLoaders.map((Loader) => (
+			<Loader />
+		))}
+	</body>
+</html>
