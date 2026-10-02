@@ -44,22 +44,11 @@ function InvalidProps({
 	);
 }
 
-type ValibotSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
-
-/**
- * Schema produced by `v.object({...})`. Same shape the dev input-name check
- * accepts at runtime (`schema.type === 'object'` and `schema.reference === v.object`).
- */
+/** Schema produced by `v.object({...})`. */
 type ValibotObjectSchema = v.ObjectSchema<
 	v.ObjectEntries,
 	v.ErrorMessage<v.ObjectIssue> | undefined
 >;
-
-function isValibotObjectSchema(
-	schema: ValibotSchema,
-): schema is ValibotObjectSchema {
-	return schema.type === 'object' && schema.reference === v.object;
-}
 
 /**
  * Compare Builder input names with Valibot object-schema keys.
@@ -70,15 +59,8 @@ function isValibotObjectSchema(
 function checkBuilderInputsMatchSchema(
 	name: string,
 	inputs: readonly { name: string }[],
-	schema: ValibotSchema,
+	schema: ValibotObjectSchema,
 ): string | undefined {
-	if (!isValibotObjectSchema(schema)) {
-		console.warn(
-			`${name}: skipped Builder inputs/schema check because the schema is not a Valibot object schema (v.object); got type "${schema.type}".`,
-		);
-		return;
-	}
-
 	const schemaKeys = new Set(Object.keys(schema.entries));
 	const inputNames = new Set(inputs.map((input) => input.name));
 	const inputsNotInSchema = [...inputNames].filter(
