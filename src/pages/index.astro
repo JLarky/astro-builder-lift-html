@@ -88,7 +88,12 @@ const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
 			<Card
 				href="/builder-react-faq-broken"
 				title="React FAQ (broken)"
-				body="The Builder React FAQ page used to reproduce the broken state."
+				body="Published React FAQ with no client hydration."
+			/>
+			<Card
+				href="/builder-react-faq-broken?__builder_editing__"
+				title="React FAQ (editing)"
+				body="Same page with __builder_editing__, which hydrates React and fixes the broken state."
 			/>
 			<Card
 				href="/builder-react-faq"
