@@ -11,7 +11,7 @@ import {
 } from '../../components/faq/state';
 import { topics } from '../../components/faq/topics';
 import { useSafeToModify } from '../OptionsProvider';
-import type { Props } from './definition';
+import type { Props } from './FaqLiftRC';
 
 const initialOpen: OpenByTopic = {};
 
