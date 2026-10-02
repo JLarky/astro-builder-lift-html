@@ -22,7 +22,7 @@ export const faqInputs = [
 		name: 'items',
 		type: 'list',
 		friendlyName: 'Questions',
-		helperText: 'Questions and answers edited in the CMS.',
+		helperText: 'Questions and answers for the first topic tab.',
 		defaultValue: defaultFaqItems,
 		subFields: [
 			{ name: 'question', type: 'string', friendlyName: 'Question' },

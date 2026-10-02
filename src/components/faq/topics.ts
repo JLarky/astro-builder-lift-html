@@ -1,4 +1,5 @@
-export type FaqAnswerPart = string | { href: string; text: string };
+export type FaqAnswerPart =
+	string | { href: string; text: string } | { html: string };
 
 export type FaqItem = {
 	question: string;

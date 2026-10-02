@@ -6,16 +6,14 @@ export function AnswerBody({ parts }: { parts: readonly FaqAnswerPart[] }) {
 	return parts.map((part, index) =>
 		typeof part === 'string' ? (
 			<Fragment key={index}>{part}</Fragment>
+		) : 'html' in part ? (
+			<span key={index} dangerouslySetInnerHTML={{ __html: part.html }} />
 		) : (
 			<a key={index} href={part.href}>
 				{part.text}
 			</a>
 		),
 	);
-}
-
-export function HtmlAnswer({ html }: { html: string }) {
-	return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export function Chevron() {
@@ -38,6 +36,9 @@ export function Chevron() {
 export function FaqHint() {
 	return (
 		<p className={styles.hint}>
+			<kbd>←</kbd>
+			<kbd>→</kbd> topics
+			<span className={styles.hintGap} />
 			<kbd>Enter</kbd> answer
 		</p>
 	);
