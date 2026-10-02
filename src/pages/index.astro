@@ -43,89 +43,129 @@ const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
 	<main>
 		<p class="kicker">Astro · Builder.io · lift-html</p>
 		<h1>
-			Builder.io pages in Astro with a{' '}
-			<span class="text-gradient">lift-html</span> bundle
+			Builder pages with a <span class="text-gradient">lift-html</span> client
 		</h1>
 		<p class="lead">
-			<a href="https://www.builder.io/">Builder.io</a> pages in Astro: visitors
-			get <a href="https://github.com/JLarky/lift-html">lift-html</a>, the
-			editor keeps React, and the bundle drops from 300 kilobytes gzipped to 10
-			kilobytes gzipped.
+			These pages are published in Builder.io and rendered by Astro. The editor
+			edits React components. Where a block has a web component, visitors load
+			that element and React stays on the server.
 		</p>
 
-		<section class="video">
+		<section class="video" aria-labelledby="walkthrough-heading">
+			<h2 id="walkthrough-heading">Walkthrough</h2>
 			{videoEmbedSrc ? (
-				<>
-					<iframe
-						class="video-frame"
-						src={videoEmbedSrc}
-						title="astro-builder-lift-html walkthrough"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						allowfullscreen
-					/>
-					<p>
-						<a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
-					</p>
-				</>
-			) : (
-				<p>
-					<a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
-				</p>
-			)}
-		</section>
-
-		<section>
-			<h2>React escape hatch</h2>
+				<iframe
+					class="video-frame"
+					src={videoEmbedSrc}
+					title="Walkthrough of the Builder pages and the lift-html client"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					allowfullscreen
+				/>
+			) : null}
 			<p>
-				The escape hatch is a React component registered as a Builder custom
-				component with no web component: the editor can still hydrate it, and a
-				published page server-renders it without shipping that React component
-				to the client.
+				<a href={YOUTUBE_VIDEO_URL}>Watch the walkthrough</a> of the published
+				pages and the editing path.
 			</p>
 		</section>
 
-		<ul role="list" class="link-card-grid">
-			<Card
-				href="/builder-react-faq-broken"
-				title="React FAQ (broken)"
-				body="Published React FAQ with no client hydration."
-			/>
-			<Card
-				href="/builder-react-faq-broken?__builder_editing__"
-				title="React FAQ (editing)"
-				body="Same page with __builder_editing__, which hydrates React and fixes the broken state."
-			/>
-			<Card
-				href="/builder-react-faq"
-				title="React FAQ"
-				body="Builder page with the React FAQ custom component."
-			/>
-			<Card
-				href="/builder-lift-faq"
-				title="Lift FAQ"
-				body="Builder page with the lift-html FAQ custom component."
-			/>
-			<Card
-				href="/builder-lift-counter"
-				title="Lift Counter"
-				body="Builder page with the lift-html counter."
-			/>
-			<Card
-				href="https://github.com/JLarky/astro-builder-lift-html"
-				title="GitHub"
-				body="Source and README."
-			/>
-			<Card
-				href="https://github.com/JLarky/lift-html"
-				title="lift-html"
-				body="The library that defines the my-counter element."
-			/>
-			<Card
-				href="https://www.builder.io/"
-				title="Builder.io"
-				body="The visual editor."
-			/>
-		</ul>
+		<section aria-labelledby="lift-counter-heading">
+			<h2 id="lift-counter-heading">Lift Counter</h2>
+			<p>
+				lift-html exists because a Builder custom component is React. Running
+				that component in the browser hydrates the page and sends React with the
+				Builder client. On the published site, that script is about 130
+				kilobytes before compression.
+			</p>
+			<p>
+				The counter keeps the React component for the editor and ships a web
+				component to visitors. The published page server-renders the markup and
+				loads <code>my-counter</code>. The element script is about 10 kilobytes
+				before compression. The + and - buttons run in the element.
+			</p>
+			<ul role="list" class="link-card-grid">
+				<Card
+					href="/builder-lift-counter"
+					title="Lift Counter"
+					body="Published counter. The + and - buttons run in the my-counter element."
+				/>
+			</ul>
+		</section>
+
+		<section aria-labelledby="escape-hatch-heading">
+			<h2 id="escape-hatch-heading">React escape hatch</h2>
+			<p>
+				An existing React component can be registered as a Builder custom
+				component with no web component. In the lift-html split, visitors get an
+				element and the editor keeps React. This registration has no element.
+				The published page does not start React.
+			</p>
+			<p>
+				The lift FAQ is the same tabbed FAQ built as that split. React renders
+				it in the editor. Visitors load <code>my-faq</code>, and the element
+				runs the tabs and the answers. The React FAQ is the existing component,
+				registered without changes.
+			</p>
+			<ul role="list" class="link-card-grid">
+				<Card
+					href="/builder-lift-faq"
+					title="Lift FAQ"
+					body="The same tabbed FAQ as a my-faq element. Visitors change topics without React."
+				/>
+				<Card
+					href="/builder-react-faq"
+					title="React FAQ"
+					body="The existing React FAQ, registered as a Builder component. Visitors get no element."
+				/>
+			</ul>
+		</section>
+
+		<section aria-labelledby="broken-faq-heading">
+			<h2 id="broken-faq-heading">Broken React FAQ</h2>
+			<p>
+				The published React FAQ is HTML from the server. React renders it there,
+				and the browser never starts React, so <code>useState</code> and
+				<code>useEffect</code> do not run. Topic buttons do not change topics,
+				and answers do not open.
+			</p>
+			<p>
+				The same path with the <code>__builder_editing__</code> query boots
+				React and the Builder client. <code>useState</code> and
+				<code>useEffect</code> run, and the FAQ responds.
+			</p>
+			<ul role="list" class="link-card-grid">
+				<Card
+					href="/builder-react-faq-broken"
+					title="React FAQ (broken)"
+					body="Published page. useState and useEffect do not run, so the FAQ does not respond."
+				/>
+				<Card
+					href="/builder-react-faq-broken?__builder_editing__"
+					title="React FAQ (editing)"
+					body="The editing query boots React and the Builder client. The FAQ responds."
+				/>
+			</ul>
+		</section>
+
+		<section aria-labelledby="links-heading">
+			<h2 id="links-heading">Links</h2>
+			<ul role="list" class="link-card-grid">
+				<Card
+					href="https://github.com/JLarky/astro-builder-lift-html"
+					title="GitHub"
+					body="Source for this Astro app, the Builder components, and the loaders."
+				/>
+				<Card
+					href="https://github.com/JLarky/lift-html"
+					title="lift-html"
+					body="The library that defines the my-counter and my-faq elements."
+				/>
+				<Card
+					href="https://www.builder.io/"
+					title="Builder.io"
+					body="The visual editor these pages are published in."
+				/>
+			</ul>
+		</section>
 	</main>
 </Layout>
 
@@ -183,7 +223,7 @@ const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
 	}
 
 	section {
-		margin: 0 0 1.75rem;
+		margin: 0 0 2.5rem;
 	}
 
 	section h2 {
@@ -220,6 +260,6 @@ const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
 		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
 		gap: 1rem;
 		padding: 0;
-		margin: 2rem 0 0;
+		margin: 1rem 0 0;
 	}
 </style>
