@@ -1,0 +1,96 @@
+---
+export const prerender = false;
+
+import { apiKey } from '../config';
+import { getBuilderContent } from '../builder/builder';
+import BuilderContentAstro from '../components/BuilderContentAstro.astro';
+import Faq from '../components/faq/Faq';
+
+const model = 'page';
+
+/**
+ * `isEditing()` from the SDK only returns true inside the editor iframe, so it
+ * is useless during SSR. Editing is the `__builder_editing__` search param.
+ */
+const { isEditing, content, loaders } = await getBuilderContent(
+	model,
+	Astro.url.pathname,
+	Astro.url.searchParams,
+);
+
+if (!content && !isEditing) {
+	return Astro.rewrite('/404');
+}
+
+/**
+ * FaqReact options live on the matching block:
+ * content.data.blocks[...].component.options.{ title, items }
+ * items[] is { question: string, answer: html string }.
+ */
+function faqReactFromContent(root: unknown) {
+	let title: string | undefined;
+	let items: { question: string; answer: string }[] | undefined;
+	const seen = new WeakSet<object>();
+	const walk = (node: unknown): void => {
+		if (!node || typeof node !== 'object' || seen.has(node)) return;
+		seen.add(node);
+		if (Array.isArray(node)) {
+			node.forEach(walk);
+			return;
+		}
+		if ('component' in node) {
+			const component = node.component;
+			if (component && typeof component === 'object' && 'name' in component) {
+				if (component.name === 'FaqReact' && 'options' in component) {
+					const options = component.options;
+					if (options && typeof options === 'object') {
+						if ('title' in options && typeof options.title === 'string') {
+							title = options.title;
+						}
+						if ('items' in options && Array.isArray(options.items)) {
+							items = options.items.flatMap((item) => {
+								if (!item || typeof item !== 'object') return [];
+								const question =
+									'question' in item && typeof item.question === 'string'
+										? item.question
+										: '';
+								const answer =
+									'answer' in item && typeof item.answer === 'string'
+										? item.answer
+										: '';
+								return [{ question, answer }];
+							});
+						}
+					}
+				}
+			}
+		}
+		for (const value of Object.values(node)) walk(value);
+	};
+	walk(root);
+	return { title, items };
+}
+
+const { title, items } = faqReactFromContent(content);
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Builder.io</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+	<body>
+		<BuilderContentAstro
+			isEditing={isEditing}
+			content={content}
+			model={model}
+			apiKey={apiKey}
+			loaders={loaders}
+		>
+			<span slot="outlet">
+				<Faq client:visible title={title} items={items} />
+			</span>
+		</BuilderContentAstro>
+	</body>
+</html>
