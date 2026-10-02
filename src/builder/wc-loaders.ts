@@ -14,5 +14,6 @@ import type { RegisteredName } from './builder-registry';
 export const wcLoaders = {
 	Counter: [CounterLoader],
 	FaqReact: [],
+	FaqReactBroken: [],
 	FaqLift: [FaqLiftLoader],
 } satisfies Record<RegisteredName, AstroComponentFactory[]>;
