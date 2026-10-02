@@ -8,9 +8,7 @@ Live at [astro-builder-lift-html.vercel.app](https://astro-builder-lift-html.ver
 
 ## Video
 
-<!-- TODO: YOUTUBE_VIDEO_URL -->
-
-Walkthrough: [TODO_YOUTUBE_VIDEO_URL](TODO_YOUTUBE_VIDEO_URL). Replace `TODO_YOUTUBE_VIDEO_URL` when the recording is published. The same token is the `YOUTUBE_VIDEO_URL` constant in `src/pages/index.astro`. The homepage shows "Video coming soon" until that constant is an `https://` URL.
+Walkthrough: [https://youtube.com/live/gFVBliU7k5k](https://youtube.com/live/gFVBliU7k5k). The same URL is the `YOUTUBE_VIDEO_URL` constant in `src/pages/index.astro`. The homepage embeds it.
 
 ## Start the development server
 

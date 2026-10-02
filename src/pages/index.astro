@@ -4,7 +4,7 @@ import Card from '../components/Card.astro';
 
 export const prerender = true;
 
-const YOUTUBE_VIDEO_URL = 'TODO_YOUTUBE_VIDEO_URL'; // replace when published
+const YOUTUBE_VIDEO_URL = 'https://youtube.com/live/gFVBliU7k5k';
 
 function youtubeEmbedSrc(url: string): string | null {
 	if (!url.startsWith('https://')) return null;
@@ -37,7 +37,6 @@ function youtubeEmbedSrc(url: string): string | null {
 }
 
 const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
-const videoReady = YOUTUBE_VIDEO_URL.startsWith('https://');
 ---
 
 <Layout title="astro-builder-lift-html">
@@ -68,22 +67,13 @@ const videoReady = YOUTUBE_VIDEO_URL.startsWith('https://');
 						allowfullscreen
 					/>
 					<p>
-						<a href={YOUTUBE_VIDEO_URL}>Open the video on YouTube</a>
+						<a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
 					</p>
 				</>
-			) : videoReady ? (
-				<p>
-					<a href={YOUTUBE_VIDEO_URL}>Watch the video</a>
-				</p>
 			) : (
-				<div class="video-soon">
-					<p class="video-soon-label">Video coming soon</p>
-					<p>
-						The embed reads <code>YOUTUBE_VIDEO_URL</code> in{' '}
-						<code>src/pages/index.astro</code>. The value is still{' '}
-						<code>TODO_YOUTUBE_VIDEO_URL</code>.
-					</p>
-				</div>
+				<p>
+					<a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
+				</p>
 			)}
 		</section>
 
@@ -166,8 +156,10 @@ const videoReady = YOUTUBE_VIDEO_URL.startsWith('https://');
 				<a href="https://github.com/JLarky/astro-builder-lift-html#readme">
 					README
 				</a>
-				. The same placeholder token, <code>TODO_YOUTUBE_VIDEO_URL</code>, is
-				there too. These pull requests are open and not merged:
+				{'. '}
+				The walkthrough is <a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
+				{'. '}
+				These pull requests are open and not merged:
 			</p>
 			<ul>
 				<li>
@@ -300,29 +292,6 @@ const videoReady = YOUTUBE_VIDEO_URL.startsWith('https://');
 
 	section li {
 		margin: 0.35rem 0;
-	}
-
-	.video-soon {
-		display: grid;
-		align-content: center;
-		gap: 0.5rem;
-		box-sizing: border-box;
-		margin-top: 0.75rem;
-		min-height: 16rem;
-		padding: 1.25rem;
-		border: 2px dashed #4f39fa;
-		border-radius: 0.5rem;
-		background: white;
-	}
-
-	.video-soon p {
-		margin: 0;
-	}
-
-	.video-soon-label {
-		font-size: 1.25rem;
-		font-weight: 800;
-		color: #4f39fa;
 	}
 
 	.video-frame {
