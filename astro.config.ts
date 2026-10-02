@@ -17,12 +17,7 @@ export default defineConfig({
 		? node({
 				mode: 'standalone',
 			})
-		: vercel({
-				imageService: true,
-				webAnalytics: {
-					enabled: true,
-				},
-			}),
+		: vercel({}),
 	integrations: [
 		react({
 			exclude: [solidFiles],
