@@ -1,8 +1,14 @@
 # astro-builder-lift-html
 
-A visual CMS like [Builder.io](https://www.builder.io/) makes every piece of a page editable and interactive, but sending all that interactivity as JavaScript makes the bundle grow with every interactive part, which does not scale. The floor is already high because the Builder SDK and React ship as baseline, and it is hard to keep the bundle small as you scale with components: it is hard to make it so that you are not paying for components sometimes, even if they are not on that page. The interactive editor keeps full functionality; the smaller bundle is for the production page. This demo shows the alternative: interactive components as web components via [lift-html](https://github.com/JLarky/lift-html), so the bundle drops from 300 kilobytes gzipped to 10 kilobytes gzipped.
+Builder.io pages rendered in Astro. Custom components are React when the visual editor needs a React component, and interactive pieces that ship to visitors are web components via [lift-html](https://github.com/JLarky/lift-html).
 
-Live at [astro-builder-lift-html.vercel.app](https://astro-builder-lift-html.vercel.app). The homepage links to the demos, including a plain React tabbed FAQ at `/react-faq`.
+Builder allows us to use custom React components on the page, but you don't just hydrate that one small component. You have to send React and Builder React SDK and a lot of code that might not even be used on that page. With the approach used in this repo (of conditionally hydrating the page), we can send just the JavaScript that is used on the page.
+
+Live at [astro-builder-lift-html.vercel.app](https://astro-builder-lift-html.vercel.app).
+
+## Video
+
+Walkthrough: [https://youtube.com/live/gFVBliU7k5k](https://youtube.com/live/gFVBliU7k5k).
 
 ## Start the development server
 

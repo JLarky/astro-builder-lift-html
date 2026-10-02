@@ -3,32 +3,97 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 
 export const prerender = true;
+
+const YOUTUBE_VIDEO_URL = 'https://youtube.com/live/gFVBliU7k5k';
+
+function youtubeEmbedSrc(url: string): string | null {
+	if (!url.startsWith('https://')) return null;
+	try {
+		const parsed = new URL(url);
+		if (parsed.hostname === 'youtu.be') {
+			const id = parsed.pathname.replace(/^\//, '');
+			return id ? `https://www.youtube.com/embed/${id}` : null;
+		}
+		if (
+			parsed.hostname === 'www.youtube.com' ||
+			parsed.hostname === 'youtube.com'
+		) {
+			const watchId = parsed.searchParams.get('v');
+			if (watchId) return `https://www.youtube.com/embed/${watchId}`;
+			const parts = parsed.pathname.split('/').filter(Boolean);
+			const marker = parts[0];
+			const id = parts[1];
+			if (
+				(marker === 'embed' || marker === 'shorts' || marker === 'live') &&
+				id
+			) {
+				return `https://www.youtube.com/embed/${id}`;
+			}
+		}
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
 ---
 
 <Layout title="astro-builder-lift-html">
 	<main>
 		<p class="kicker">Astro · Builder.io · lift-html</p>
 		<h1>
-			A Builder.io page with a <span class="text-gradient">lift-html</span>{' '}
-			counter
+			Builder.io pages in Astro with a{' '}
+			<span class="text-gradient">lift-html</span> bundle
 		</h1>
 		<p class="lead">
-			This is a demo of a published Builder.io page and a lift-html counter.
-			Open <a href="/builder-demo">/builder-demo</a> to see it, or the{' '}
-			<a href="/react-faq">React FAQ</a> for a separate tabbed island. See the
-			README for how to run locally.
+			<a href="https://www.builder.io/">Builder.io</a> pages in Astro: visitors
+			get <a href="https://github.com/JLarky/lift-html">lift-html</a>, the
+			editor keeps React, and the bundle drops from 300 kilobytes gzipped to 10
+			kilobytes gzipped.
 		</p>
+
+		<section class="video">
+			{videoEmbedSrc ? (
+				<>
+					<iframe
+						class="video-frame"
+						src={videoEmbedSrc}
+						title="astro-builder-lift-html walkthrough"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowfullscreen
+					/>
+					<p>
+						<a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
+					</p>
+				</>
+			) : (
+				<p>
+					<a href={YOUTUBE_VIDEO_URL}>{YOUTUBE_VIDEO_URL}</a>
+				</p>
+			)}
+		</section>
+
+		<section>
+			<h2>React escape hatch</h2>
+			<p>
+				The escape hatch is a React component registered as a Builder custom
+				component with no web component: the editor can still hydrate it, and a
+				published page server-renders it without shipping that React component
+				to the client.
+			</p>
+		</section>
 
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="/builder-demo"
-				title="Builder demo"
-				body="The published Builder.io page and the lift-html counter."
-			/>
-			<Card
 				href="/react-faq"
 				title="React FAQ"
-				body="A plain React tabbed FAQ, with topics and expandable answers."
+				body="A plain React tabbed FAQ on its own route. Not a Builder custom component."
+			/>
+			<Card
+				href="https://github.com/JLarky/astro-builder-lift-html"
+				title="GitHub"
+				body="Source and README."
 			/>
 			<Card
 				href="https://github.com/JLarky/lift-html"
@@ -38,7 +103,7 @@ export const prerender = true;
 			<Card
 				href="https://www.builder.io/"
 				title="Builder.io"
-				body="The visual editor for the page this demo renders."
+				body="The visual editor."
 			/>
 		</ul>
 	</main>
@@ -118,6 +183,16 @@ export const prerender = true;
 
 	section a {
 		color: inherit;
+	}
+
+	.video-frame {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		margin-top: 0.75rem;
+		border: 0;
+		border-radius: 0.5rem;
+		background: white;
 	}
 
 	.link-card-grid {

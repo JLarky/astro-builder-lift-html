@@ -23,7 +23,7 @@ export async function getBuilderContent(
 ) {
 	/**
 	 * `isEditing()` from the SDK only returns true inside the editor iframe, so it
-	 * is useless during SSR. Editing is the `builder.editing` search param.
+	 * is useless during SSR. Editing is the `__builder_editing__` search param.
 	 */
 	const isEditing = searchParams.has('__builder_editing__');
 	const content = await fetchOneEntry({
