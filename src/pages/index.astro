@@ -86,9 +86,29 @@ const videoEmbedSrc = youtubeEmbedSrc(YOUTUBE_VIDEO_URL);
 
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="/react-faq"
+				href="/builder-react-faq-broken"
+				title="React FAQ (broken)"
+				body="Published React FAQ with no client hydration."
+			/>
+			<Card
+				href="/builder-react-faq-broken?__builder_editing__"
+				title="React FAQ (editing)"
+				body="Same page with __builder_editing__, which hydrates React and fixes the broken state."
+			/>
+			<Card
+				href="/builder-react-faq"
 				title="React FAQ"
-				body="A plain React tabbed FAQ on its own route. Not a Builder custom component."
+				body="Builder page with the React FAQ custom component."
+			/>
+			<Card
+				href="/builder-lift-faq"
+				title="Lift FAQ"
+				body="Builder page with the lift-html FAQ custom component."
+			/>
+			<Card
+				href="/builder-lift-counter"
+				title="Lift Counter"
+				body="Builder page with the lift-html counter."
 			/>
 			<Card
 				href="https://github.com/JLarky/astro-builder-lift-html"
