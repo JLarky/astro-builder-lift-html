@@ -46,12 +46,18 @@ function InvalidProps({
 
 type ValibotSchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
-function isValibotObjectSchema(
-	schema: ValibotSchema,
-): schema is v.ObjectSchema<
+/**
+ * Schema produced by `v.object({...})`. Same shape the dev input-name check
+ * accepts at runtime (`schema.type === 'object'` and `schema.reference === v.object`).
+ */
+type ValibotObjectSchema = v.ObjectSchema<
 	v.ObjectEntries,
 	v.ErrorMessage<v.ObjectIssue> | undefined
-> {
+>;
+
+function isValibotObjectSchema(
+	schema: ValibotSchema,
+): schema is ValibotObjectSchema {
 	return schema.type === 'object' && schema.reference === v.object;
 }
 
@@ -101,7 +107,7 @@ function checkBuilderInputsMatchSchema(
 
 export function createBuilderComponent<
 	const N extends string,
-	T extends v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
+	T extends ValibotObjectSchema,
 >(definition: Omit<RegisteredComponent, 'name'> & { name: N }, inputSchema: T) {
 	const { component, inputs = [], name } = definition;
 	const schemaMismatch = import.meta.env.DEV
