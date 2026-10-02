@@ -36,3 +36,5 @@ export async function getBuilderContent(
 
 	return { content, isEditing, loaders: loadersFor(content, isEditing) };
 }
+
+export type Loaders = ReturnType<typeof loadersFor>;

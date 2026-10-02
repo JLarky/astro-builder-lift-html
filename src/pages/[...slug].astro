@@ -34,9 +34,11 @@ if (!content && !isEditing) {
 			content={content}
 			model={model}
 			apiKey={apiKey}
-		/>
-		{loaders.map((Loader) => (
-			<Loader />
-		))}
+			loaders={loaders}
+		>
+			<span slot="outlet">this is outlet</span>
+			<span slot="footer">this is footer</span>
+			<span slot="header">this is header</span>
+		</BuilderContentAstro>
 	</body>
 </html>

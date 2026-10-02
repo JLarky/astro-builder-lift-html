@@ -1,15 +1,17 @@
 ---
 import type { BuilderContent as BuilderContentType } from '@builder.io/sdk-react';
 import BuilderContent from '../builder/BuilderContent';
+import type { Loaders } from '../builder/builder';
 
 type Props = {
 	isEditing: boolean;
 	content: BuilderContentType | null;
 	model: string;
 	apiKey: string;
+	loaders: Loaders;
 };
 
-const { isEditing, content, model, apiKey } = Astro.props;
+const { isEditing, content, model, apiKey, loaders } = Astro.props;
 ---
 
 <>
@@ -21,9 +23,9 @@ const { isEditing, content, model, apiKey } = Astro.props;
 			content={content}
 			isEditing={true}
 		>
-			<span slot="outlet">this is outlet</span>
-			<span slot="footer">this is footer</span>
-			<span slot="header">this is header</span>
+			<slot name="outlet" slot="outlet" />
+			<slot name="footer" slot="footer" />
+			<slot name="header" slot="header" />
 		</BuilderContent>
 	) : (
 		<BuilderContent
@@ -31,6 +33,13 @@ const { isEditing, content, model, apiKey } = Astro.props;
 			model={model}
 			content={content}
 			isEditing={false}
-		/>
+		>
+			<slot name="outlet" slot="outlet" />
+			<slot name="footer" slot="footer" />
+			<slot name="header" slot="header" />
+		</BuilderContent>
 	)}
+	{loaders.map((Loader) => (
+		<Loader />
+	))}
 </>
