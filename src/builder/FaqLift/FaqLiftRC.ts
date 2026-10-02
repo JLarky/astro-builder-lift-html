@@ -7,12 +7,14 @@ export const { builderComponent, propsType } = createBuilderComponent(
 		name: 'FaqLift',
 		friendlyName: 'FAQ (lift-html)',
 		component: Faq,
+		canHaveChildren: true,
 		inputs: [
 			{
 				name: 'title',
 				type: 'string',
 				friendlyName: 'Title',
-				helperText: 'Optional heading. Topics and answers are built in.',
+				helperText:
+					'Optional heading. Drop Builder blocks inside to edit the FAQ text in the CMS.',
 			},
 		],
 	},

@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { Children, useId } from 'react';
 import { AnswerBody, Chevron, FaqHint } from '../../components/faq/parts';
 import styles from '../../components/faq/faq.module.css';
 import {
@@ -15,12 +15,13 @@ import type { Props } from './FaqLiftRC';
 
 const initialOpen: OpenByTopic = {};
 
-function Faq({ title }: Props) {
+function Faq({ title, children }: Props) {
 	const uid = useId();
 	const safeToModify = useSafeToModify();
 	const heading = title?.trim();
 	const topic = topics[0];
 	const remembered = keptOpenCount(initialOpen, topic.id, topics);
+	const hasChildren = Children.count(children) > 0;
 
 	return (
 		<my-faq
@@ -29,6 +30,7 @@ function Faq({ title }: Props) {
 			safe-to-modify={safeToModify ? 'true' : 'false'}
 		>
 			{heading ? <p className={styles.title}>{heading}</p> : null}
+			{hasChildren ? <div className={styles.panel}>{children}</div> : null}
 			<div
 				className={styles.tabs}
 				role="tablist"
