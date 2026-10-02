@@ -1,5 +1,5 @@
 import { createBuilderComponent } from '../define-component';
-import * as v from 'valibot';
+import { faqInputs, faqPropsSchema } from '../faq-inputs';
 import Faq from './Faq';
 
 export const { builderComponent, propsType } = createBuilderComponent(
@@ -7,18 +7,9 @@ export const { builderComponent, propsType } = createBuilderComponent(
 		name: 'FaqLift',
 		friendlyName: 'FAQ (lift-html)',
 		component: Faq,
-		inputs: [
-			{
-				name: 'title',
-				type: 'string',
-				friendlyName: 'Title',
-				helperText: 'Optional heading. Topics and answers are built in.',
-			},
-		],
+		inputs: faqInputs,
 	},
-	v.object({
-		title: v.optional(v.string()),
-	}),
+	faqPropsSchema,
 );
 
 export type Props = typeof propsType;

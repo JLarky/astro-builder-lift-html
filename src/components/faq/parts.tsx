@@ -14,6 +14,10 @@ export function AnswerBody({ parts }: { parts: readonly FaqAnswerPart[] }) {
 	);
 }
 
+export function HtmlAnswer({ html }: { html: string }) {
+	return <span dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
 export function Chevron() {
 	return (
 		<span className={styles.chevron} aria-hidden="true">
@@ -34,9 +38,6 @@ export function Chevron() {
 export function FaqHint() {
 	return (
 		<p className={styles.hint}>
-			<kbd>←</kbd>
-			<kbd>→</kbd> topics
-			<span className={styles.hintGap} />
 			<kbd>Enter</kbd> answer
 		</p>
 	);

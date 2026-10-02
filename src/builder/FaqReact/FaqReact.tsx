@@ -1,8 +1,8 @@
 import Faq from '../../components/faq/Faq';
 import type { Props } from './FaqReactRC';
 
-function FaqReact({ title }: Props) {
-	return <Faq title={title} />;
+function FaqReact({ title, items }: Props) {
+	return <Faq title={title} items={items} />;
 }
 
 export default FaqReact;
